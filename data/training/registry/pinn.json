@@ -1,0 +1,10 @@
+{
+  "version": "pinn-NTN-6803-20260916",
+  "asset_class": "NTN-6803",
+  "n_trajectories": 10,
+  "n_points": 1176,
+  "final_loss": 2.1e-05,
+  "production_grade": true,
+  "experimental": false,
+  "written_at": "2026-09-16T06:53:56.292276+00:00"
+}

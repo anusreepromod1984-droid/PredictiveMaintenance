@@ -1,0 +1,41 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Version control & IDEs
+.git/
+.gitignore
+.cursor/
+.idea/
+.vscode/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Tests & Documentation
+tests/
+docs/
+presentation/
+*.md
+*.docx
+*.pptx
+*.pdf
+
+# Runtime data & logs
+data/events/
+*.log
+*.jsonl
+
+# Environment & secrets
+.env
+.env.*
+!.env.example

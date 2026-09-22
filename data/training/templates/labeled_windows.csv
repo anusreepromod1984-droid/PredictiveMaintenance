@@ -1,0 +1,9 @@
+# One confirmed class per timestamp. Do not use TelemetryReading_Fault_Injected_Data.csv.
+# label: NORMAL | BPFI | BPFO | MF001 | MF002 | MF003 | EF001 | SENSOR
+# source: teardown | wo | technician | commissioning
+# Minima: 30 windows/class experimental, 100/class production. Need >=2 classes including NORMAL.
+# Import skips machine_id values that start with EXAMPLE.
+machine_id,timestamp,label,source,imuAcceleration,emVoltageImbalance,emMachineLoad,tempMotor,tempAmbient,pattern,isolatedDomain,matchedFault,notes
+EXAMPLE_COMP_01,2026-03-12T10:00:00Z,NORMAL,commissioning,1.4,0.8,70,42,28,STABLE,MECHANICAL,NONE,healthy baseline after install
+EXAMPLE_COMP_01,2026-08-01T14:22:00Z,BPFI,teardown,6.8,1.1,82,55,29,STEADY_CLIMB,MECHANICAL,BPFI,confirmed inner race pitting
+EXAMPLE_COMP_02,2026-08-15T09:10:00Z,EF001,technician,2.1,4.6,88,61,30,STABLE,ELECTRICAL,NONE,phase unbalance measured at MCC

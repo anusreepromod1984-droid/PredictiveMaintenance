@@ -1,0 +1,44 @@
+# Secrets and local environment
+
+.env.*
+!.env.example
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.log
+
+# Node
+node_modules/
+*.tsbuildinfo
+
+# Runtime / generated data
+data/events/
+*.jsonl
+
+# Docker and local tooling
+.docker/
+*.pid
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/

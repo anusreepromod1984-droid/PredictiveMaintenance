@@ -1,0 +1,10 @@
+# One row per component life. Replace EXAMPLE_* rows with plant history.
+# event_type: failed | replaced_pm | still_running
+# Import skips machine_id values that start with EXAMPLE.
+# Minima: 8 failures to fit, 20 recommended for production B10. Include censored still_running lives.
+machine_id,component,asset_class,hours_at_install,hours_at_event,event_type,event_date,work_order_id,notes
+EXAMPLE_COMP_01,DE_bearing,SKF-6208,0,8420,failed,2024-03-12,WO-1001,inner race pitting confirmed at teardown
+EXAMPLE_COMP_02,DE_bearing,SKF-6208,0,9100,failed,2024-06-02,WO-1002,outer race flaking
+EXAMPLE_COMP_03,DE_bearing,SKF-6208,0,7600,failed,2024-08-19,WO-1003,
+EXAMPLE_COMP_04,DE_bearing,SKF-6208,0,10200,replaced_pm,2025-01-08,WO-PM-44,replaced on PM before failure
+EXAMPLE_COMP_05,DE_bearing,SKF-6208,0,4300,still_running,2026-09-01,,censored — still in service

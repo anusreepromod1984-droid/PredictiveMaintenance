@@ -1,0 +1,90 @@
+{
+  "plant": {
+    "name": "Factory Floor 1",
+    "city": "Peenya, Bengaluru",
+    "pin": "560058",
+    "crm_system": "Greenbotz Demo SAP PM",
+    "crm_connected": true,
+    "sap_client": "100",
+    "sap_plant": "1000",
+    "planner_group": "PM1",
+    "planner_name": "K. Rao"
+  },
+  "warehouse": {
+    "SKF-6208": { "qty": 0, "bin": "BIN-A12", "min_qty": 2 },
+    "SKF-6310": { "qty": 3, "bin": "BIN-B07", "min_qty": 1 },
+    "FAG-22216": { "qty": 0, "bin": "BIN-C03", "min_qty": 1 },
+    "COUPLING-L100": { "qty": 4, "bin": "BIN-SHIM-04", "min_qty": 1 },
+    "DRIVE-BELT-SPZ1250": { "qty": 0, "bin": "BIN-D11", "min_qty": 2 },
+    "AIR-LEAK-KIT": { "qty": 0, "bin": "BIN-AIR-02", "min_qty": 4 },
+    "FOUNDATION-BOLT-KIT": { "qty": 8, "bin": "BIN-FAST-01", "min_qty": 4 }
+  },
+  "tagged_vendors": {
+    "SKF-6208": [
+      {
+        "name": "Peenya Precision Bearings",
+        "city": "Peenya, Bengaluru",
+        "phone": "+91-80-2839-1100",
+        "oem_line": "SKF",
+        "qty_on_hand": 0,
+        "lead_time_days": 5,
+        "unit_inr": 4200
+      }
+    ],
+    "SKF-6310": [
+      {
+        "name": "Peenya Precision Bearings",
+        "city": "Peenya, Bengaluru",
+        "phone": "+91-80-2839-1100",
+        "oem_line": "SKF",
+        "qty_on_hand": 8,
+        "lead_time_days": 2,
+        "unit_inr": 6800
+      }
+    ],
+    "FAG-22216": [
+      {
+        "name": "Bhosari Industrial Bearings",
+        "city": "Bhosari, Pune",
+        "phone": "+91-20-2712-4400",
+        "oem_line": "FAG",
+        "qty_on_hand": 6,
+        "lead_time_days": 3,
+        "unit_inr": 14500
+      }
+    ],
+    "COUPLING-L100": [
+      {
+        "name": "Ambattur Power Transmission",
+        "city": "Ambattur, Chennai",
+        "phone": "+91-44-2652-2200",
+        "oem_line": "Lovejoy",
+        "qty_on_hand": 12,
+        "lead_time_days": 2,
+        "unit_inr": 1600
+      }
+    ],
+    "AIR-LEAK-KIT": [
+      {
+        "name": "Peenya Pneumatics",
+        "city": "Peenya, Bengaluru",
+        "phone": "+91-80-2839-2210",
+        "oem_line": "Festo",
+        "qty_on_hand": 0,
+        "lead_time_days": 2,
+        "unit_inr": 190
+      }
+    ],
+    "FOUNDATION-BOLT-KIT": [
+      {
+        "name": "Hosur Fastener House",
+        "city": "Hosur",
+        "phone": "+91-4344-220-110",
+        "oem_line": "Unbrako",
+        "qty_on_hand": 40,
+        "lead_time_days": 1,
+        "unit_inr": 85
+      }
+    ]
+  }
+}

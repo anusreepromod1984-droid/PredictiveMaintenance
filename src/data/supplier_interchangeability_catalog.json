@@ -1,0 +1,312 @@
+{
+  "catalog_version": "2.0.0",
+  "international_standards": ["ISO 15", "DIN 625-1", "ANSI/ABMA 9", "DIN 740 (Couplings)", "ISO 5296 (Belts)"],
+  "parts_database": {
+    "SKF-6208": {
+      "part_category": "Deep Groove Ball Bearing",
+      "dimensions": { "bore_mm": 40.0, "outer_diameter_mm": 80.0, "width_mm": 18.0 },
+      "dynamic_load_kn": 32.5,
+      "static_load_kn": 19.0,
+      "oem_details": {
+        "manufacturer": "SKF Bearings India Ltd.",
+        "part_number": "SKF 6208-2RS1/C3",
+        "in_market_active": true,
+        "standard_lead_time_days": 3,
+        "unit_cost_usd": 48.50,
+        "vendor_sla_rating": "A+"
+      },
+      "verified_buy_links": [
+        {
+          "tier": "oem_locator",
+          "name": "SKF product page",
+          "url": "https://www.skf.com/in/products/rolling-bearings/ball-bearings/deep-groove-ball-bearings/productid-6208-2RS1",
+          "what_it_finds": "SKF 6208-2RS1 sealed 40×80×18 mm deep-groove bearing",
+          "quote_inr": 726,
+          "lead_note": "Official SKF datasheet — buy from an authorized stockist",
+          "genuine_oem": true
+        },
+        {
+          "tier": "india_b2b",
+          "name": "Moglix",
+          "url": "https://www.moglix.com/skf-6208-2rs1-c3-deep-groove-ball-bearing-40x80x18-mm/mp/msnic614qv4",
+          "what_it_finds": "SKF 6208-2RS1/C3 40×80×18 mm",
+          "quote_inr": 726,
+          "lead_note": "Listed SKF 6208-2RS1/C3 product page"
+        },
+        {
+          "tier": "india_b2b",
+          "name": "Industrybuying",
+          "url": "https://www.industrybuying.com/deep-groove-ball-bearings-skf-BEA.DEE.47402467",
+          "what_it_finds": "SKF 6208-2RS1/C3 40×80×18 mm",
+          "quote_inr": 4026,
+          "lead_note": "Listed SKF 6208-2RS1/C3 product page"
+        },
+        {
+          "tier": "global_mro",
+          "name": "RS Components India",
+          "url": "https://in.rsdelivers.com/product/skf/6208-2rs1/c3/skf-6208-2rs1/c3-1-row-ball-bearing-40-mm-id-80-mm-od/6671204",
+          "what_it_finds": "SKF 6208-2RS1/C3 RS stock 667-1204",
+          "quote_inr": 4026,
+          "lead_note": "Listed SKF 6208-2RS1/C3 product page"
+        },
+        {
+          "tier": "india_b2b",
+          "name": "IndiaMART",
+          "url": "https://www.indiamart.com/proddetail/skf-6208-2rs-deep-groove-ball-bearing-2851511244555.html",
+          "what_it_finds": "SKF 6208-2RS 40×80×18 mm (sealed)",
+          "quote_inr": 100,
+          "lead_note": "Seller listing for SKF 6208 2RS — confirm C3 clearance"
+        }
+      ],
+      "compatible_alternates": [
+        {
+          "manufacturer": "NSK Corporation",
+          "part_number": "NSK 6208-DDU-C3",
+          "compatibility_standard": "ISO 15 / DIN 625-1 (100% Form-Fit-Function Interchangeable)",
+          "lead_time_days": 2,
+          "unit_cost_usd": 46.20,
+          "in_stock_inventory": 45,
+          "vendor_sla_rating": "A+"
+        },
+        {
+          "manufacturer": "FAG Schaeffler Group",
+          "part_number": "FAG 6208-2RSR-C3",
+          "compatibility_standard": "ISO 15 / DIN 625-1 (100% Form-Fit-Function Interchangeable)",
+          "lead_time_days": 3,
+          "unit_cost_usd": 47.80,
+          "in_stock_inventory": 30,
+          "vendor_sla_rating": "A"
+        },
+        {
+          "manufacturer": "NTN Bearing Corp",
+          "part_number": "NTN 6208-LLU/C3",
+          "compatibility_standard": "ISO 15 / DIN 625-1 (100% Form-Fit-Function Interchangeable)",
+          "lead_time_days": 4,
+          "unit_cost_usd": 44.00,
+          "in_stock_inventory": 18,
+          "vendor_sla_rating": "A"
+        }
+      ]
+    },
+    "SKF-6310": {
+      "part_category": "Deep Groove Ball Bearing",
+      "dimensions": { "bore_mm": 50.0, "outer_diameter_mm": 110.0, "width_mm": 27.0 },
+      "dynamic_load_kn": 65.0,
+      "static_load_kn": 38.0,
+      "oem_details": {
+        "manufacturer": "SKF Bearings Ltd.",
+        "part_number": "SKF 6310-2RS1",
+        "in_market_active": true,
+        "standard_lead_time_days": 4,
+        "unit_cost_usd": 78.00,
+        "vendor_sla_rating": "A+"
+      },
+      "verified_buy_links": [
+        {
+          "tier": "india_b2b",
+          "name": "Moglix",
+          "url": "https://www.moglix.com/skf-6310-2rs1-deep-groove-ball-bearing-50x110x27-mm/mp/msniombsqv4",
+          "what_it_finds": "SKF 6310-2RS1 50×110×27 mm",
+          "quote_inr": 2134,
+          "lead_note": "Listed SKF 6310-2RS1 product page"
+        }
+      ],
+      "compatible_alternates": [
+        {
+          "manufacturer": "NSK Corporation",
+          "part_number": "NSK 6310-DDU",
+          "compatibility_standard": "ISO 15 / DIN 625-1 (100% Interchangeable)",
+          "lead_time_days": 2,
+          "unit_cost_usd": 74.50,
+          "in_stock_inventory": 22,
+          "vendor_sla_rating": "A+"
+        },
+        {
+          "manufacturer": "FAG Schaeffler Group",
+          "part_number": "FAG 6310-2RSR",
+          "compatibility_standard": "ISO 15 / DIN 625-1 (100% Interchangeable)",
+          "lead_time_days": 3,
+          "unit_cost_usd": 76.00,
+          "in_stock_inventory": 15,
+          "vendor_sla_rating": "A"
+        }
+      ]
+    },
+    "FAG-22216": {
+      "part_category": "Spherical Roller Bearing",
+      "dimensions": { "bore_mm": 80.0, "outer_diameter_mm": 140.0, "width_mm": 33.0 },
+      "dynamic_load_kn": 240.0,
+      "static_load_kn": 275.0,
+      "oem_details": {
+        "manufacturer": "FAG Schaeffler Group",
+        "part_number": "FAG 22216-E1-K",
+        "in_market_active": true,
+        "standard_lead_time_days": 5,
+        "unit_cost_usd": 165.00,
+        "vendor_sla_rating": "A+"
+      },
+      "compatible_alternates": [
+        {
+          "manufacturer": "SKF Bearings",
+          "part_number": "SKF 22216-EK",
+          "compatibility_standard": "ISO 15 / DIN 635 (100% Interchangeable)",
+          "lead_time_days": 3,
+          "unit_cost_usd": 172.00,
+          "in_stock_inventory": 12,
+          "vendor_sla_rating": "A+"
+        },
+        {
+          "manufacturer": "Timken Company",
+          "part_number": "Timken 22216-EJW33",
+          "compatibility_standard": "ISO 15 / DIN 635 (100% Interchangeable)",
+          "lead_time_days": 4,
+          "unit_cost_usd": 168.00,
+          "in_stock_inventory": 8,
+          "vendor_sla_rating": "A"
+        }
+      ]
+    },
+    "COUPLING-L100": {
+      "part_category": "Flexible Shaft Jaw Coupling Spider",
+      "dimensions": { "max_bore_mm": 35.0, "outer_diameter_mm": 65.0 },
+      "oem_details": {
+        "manufacturer": "Lovejoy Inc.",
+        "part_number": "Lovejoy L-100 SOX Elastomer",
+        "in_market_active": true,
+        "standard_lead_time_days": 2,
+        "unit_cost_usd": 18.50,
+        "vendor_sla_rating": "A+"
+      },
+      "verified_buy_links": [
+        {
+          "tier": "india_b2b",
+          "name": "Moglix",
+          "url": "https://www.moglix.com/lovejoy-special-spider-size-l-100-material-pu/mp/msn2rcthq1n86p",
+          "what_it_finds": "Lovejoy L-100 PU spider",
+          "quote_inr": 1536,
+          "lead_note": "Listed Lovejoy L-100 spider product page"
+        }
+      ],
+      "compatible_alternates": [
+        {
+          "manufacturer": "Rexnord Corp",
+          "part_number": "Rexnord Omega 2 Insert",
+          "compatibility_standard": "DIN 740 / AGMA 9002",
+          "lead_time_days": 2,
+          "unit_cost_usd": 19.00,
+          "in_stock_inventory": 60,
+          "vendor_sla_rating": "A+"
+        },
+        {
+          "manufacturer": "Martin Sprocket & Gear",
+          "part_number": "Martin Quadra-Flex 5S",
+          "compatibility_standard": "DIN 740 Form Match",
+          "lead_time_days": 3,
+          "unit_cost_usd": 17.80,
+          "in_stock_inventory": 25,
+          "vendor_sla_rating": "A"
+        }
+      ]
+    },
+    "DRIVE-BELT-SPZ1250": {
+      "part_category": "V-Belt Power Transmission",
+      "dimensions": { "pitch_length_mm": 1250.0, "top_width_mm": 9.7, "height_mm": 8.0 },
+      "oem_details": {
+        "manufacturer": "Gates Corporation",
+        "part_number": "Gates Quad-Power 4 SPZ1250",
+        "in_market_active": true,
+        "standard_lead_time_days": 2,
+        "unit_cost_usd": 22.00,
+        "vendor_sla_rating": "A+"
+      },
+      "compatible_alternates": [
+        {
+          "manufacturer": "Optibelt GmbH",
+          "part_number": "Optibelt Super X-POWER SPZ 1250",
+          "compatibility_standard": "DIN 7753 / ISO 4184",
+          "lead_time_days": 1,
+          "unit_cost_usd": 23.50,
+          "in_stock_inventory": 100,
+          "vendor_sla_rating": "A+"
+        },
+        {
+          "manufacturer": "Continental ContiTech",
+          "part_number": "Conti-V Advance SPZ1250",
+          "compatibility_standard": "DIN 7753 / ISO 4184",
+          "lead_time_days": 2,
+          "unit_cost_usd": 21.80,
+          "in_stock_inventory": 40,
+          "vendor_sla_rating": "A"
+        }
+      ]
+    },
+    "AIR-LEAK-KIT": {
+      "part_category": "Compressed-air leak repair kit",
+      "oem_details": {
+        "manufacturer": "Festo India Pvt. Ltd.",
+        "part_number": "Festo QSL-1/4-8",
+        "in_market_active": true,
+        "standard_lead_time_days": 1,
+        "unit_cost_usd": 18.00,
+        "vendor_sla_rating": "A"
+      },
+      "verified_buy_links": [
+        {
+          "tier": "india_b2b",
+          "name": "Moglix",
+          "url": "https://www.moglix.com/festo-qsl-1-4-8-153049-push-in-threaded-l-fitting-pack-of-10/mp/msn2r9dpkvxymf",
+          "what_it_finds": "Festo QSL-1/4-8 (153049) 8 mm push-in L-fitting",
+          "quote_inr": 184,
+          "lead_note": "Listed Festo QSL-1/4-8 product page"
+        },
+        {
+          "tier": "india_b2b",
+          "name": "Industrybuying",
+          "url": "https://www.industrybuying.com/pneumatic-fittings-festo-PN.AI.AI.1565375",
+          "what_it_finds": "Festo QSL-1/4-8 (153049) push-in L-fitting",
+          "quote_inr": 4940,
+          "lead_note": "Listed Festo QSL-1/4-8 product page"
+        },
+        {
+          "tier": "global_mro",
+          "name": "RS Components India",
+          "url": "https://in.rsdelivers.com/product/festo/qsl-1/4-8/festo-qsl-series-153049-male-r-1/4-in-r/1216192",
+          "what_it_finds": "Festo QSL-1/4-8 RS stock 121-6192",
+          "quote_inr": 1494,
+          "lead_note": "Listed Festo QSL-1/4-8 product page"
+        },
+        {
+          "tier": "india_b2b",
+          "name": "IndiaMART",
+          "url": "https://www.indiamart.com/proddetail/push-in-l-fitting-qsl-1-4-8-make-festo-25608140762.html",
+          "what_it_finds": "Festo QSL-1/4-8 push-in L-fitting",
+          "quote_inr": 24,
+          "lead_note": "Seller listing for Festo QSL-1/4-8"
+        }
+      ],
+      "compatible_alternates": [
+        {
+          "manufacturer": "Parker / Festo equivalents",
+          "part_number": "Push-in fitting + NBR seal pack",
+          "compatibility_standard": "ISO 4414 pneumatic fittings",
+          "lead_time_days": 1,
+          "unit_cost_usd": 16.50,
+          "in_stock_inventory": 0,
+          "vendor_sla_rating": "A"
+        }
+      ]
+    },
+    "FOUNDATION-BOLT-KIT": {
+      "part_category": "Motor / compressor hold-down hardware",
+      "oem_details": {
+        "manufacturer": "Plant fastener stores",
+        "part_number": "M16 foundation bolt + lock-washer kit",
+        "in_market_active": true,
+        "standard_lead_time_days": 1,
+        "unit_cost_usd": 12.00,
+        "vendor_sla_rating": "A"
+      },
+      "compatible_alternates": []
+    }
+  }
+}

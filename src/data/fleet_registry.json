@@ -1,0 +1,107 @@
+{
+  "assets": [
+    {
+      "machine_id": "compressor_unit_01",
+      "name": "Compressor Unit 01 — Elson EL30 Reciprocating Piston",
+      "manufacturer": "Elson Industries",
+      "model": "EL30",
+      "serial_number": "978",
+      "mfg_year": "2012",
+      "address": "71, Karunanithi Nagar, Sowripalayam, Coimbatore-28",
+      "type": "Reciprocating Piston Air Compressor",
+      "line": "Air header",
+      "criticality": 5,
+      "nameplate": {
+        "power_hp": 3.0,
+        "power_kw": 2.24,
+        "unit_rpm": 720,
+        "displacement_cfm": 8,
+        "working_pressure_kg_cm2": 10,
+        "working_pressure_bar": 9.81,
+        "tank_capacity_litres": 160
+      },
+      "drive": {
+        "type": "Belt drive (2:1 pulley ratio)",
+        "motor_rpm": 1440,
+        "motor_poles": 4,
+        "grid_hz": 50
+      },
+      "bearings": {
+        "compressor_pump_shaft": "SKF-6206",
+        "drive_motor": "SKF-6205",
+        "notes": "SKF-6206 (30mm bore) on compressor crankshaft; SKF-6205 (25mm bore) on drive motor"
+      },
+      "iso_classification": {
+        "machine_group": "2",
+        "support": "flexible",
+        "standard": "ISO 10816-6 (Reciprocating Machines)",
+        "note": "Reciprocating piston — higher broadband vibration baseline than rotary machines is normal"
+      },
+      "physics_baselines": {
+        "base_lifespan_hours": 8000,
+        "nominal_shaft_hz": 12.0,
+        "bpfi_hz_at_nominal": 59.3,
+        "bpfo_hz_at_nominal": 36.7,
+        "1x_rpm_hz": 12.0,
+        "2x_rpm_piston_stroke_hz": 24.0,
+        "normal_vib_max_mm_s": 2.80,
+        "warning_vib_mm_s": 4.50,
+        "danger_vib_mm_s": 7.10
+      },
+      "pm_tasks": [
+        {
+          "id": "LUBE-DE",
+          "name": "Drive-end bearing relubrication (SKF-6206)",
+          "interval_hours": 1000,
+          "hours_since_last": 940
+        },
+        {
+          "id": "BELT-CHECK",
+          "name": "V-belt tension and wear check",
+          "interval_days": 30,
+          "days_since_last": 22
+        },
+        {
+          "id": "WALK-AIR",
+          "name": "Discharge leak walkdown & pressure test to 9.81 bar",
+          "interval_days": 7,
+          "days_since_last": 6
+        },
+        {
+          "id": "VALVE-CHECK",
+          "name": "Inlet/outlet reed valve inspection",
+          "interval_hours": 2000,
+          "hours_since_last": 1200
+        }
+      ]
+    },
+    {
+      "machine_id": "motor_drive_02",
+      "name": "Induction Motor Drive 02 (30 kW)",
+      "line": "Process line B",
+      "criticality": 3,
+      "pm_tasks": [
+        {
+          "id": "INSP-COUPLING",
+          "name": "Coupling alignment check",
+          "interval_days": 30,
+          "days_since_last": 18
+        }
+      ]
+    },
+    {
+      "machine_id": "chiller_pump_03",
+      "name": "Centrifugal Chiller Pump 03",
+      "line": "HVAC",
+      "criticality": 4,
+      "pm_tasks": [
+        {
+          "id": "OIL-SAMPLE",
+          "name": "Oil sample / ISO 4406",
+          "interval_days": 90,
+          "days_since_last": 92
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "timezone": "Asia/Kolkata",
+  "night": {
+    "start_hour": 22,
+    "duration_hours": 8,
+    "crew": "Night A",
+    "kind": "night_window"
+  },
+  "planned_outage": {
+    "weekday": 5,
+    "start_hour": 6,
+    "end_hour": 14,
+    "crew": "Saturday A",
+    "kind": "planned_outage"
+  },
+  "urgent_rul_days": 3
+}

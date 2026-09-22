@@ -1,0 +1,87 @@
+{
+  "_comment": "Search templates are reference only. Agent Delta buy links come from verified_buy_links on each part — never dump {query} searches into the assistant.",
+  "oem_locators": [
+    {
+      "name": "SKF Bearings India",
+      "url": "https://www.skf.com/in/find-a-distributor",
+      "search_url": "https://www.skf.com/in/search?q={query}",
+      "what_it_finds": "Official SKF authorized industrial distributors by PIN, city, or state.",
+      "brands": ["SKF"],
+      "genuine_oem": true,
+      "lead_note": "Guaranteed genuine OEM — confirm stock with the locator"
+    },
+    {
+      "name": "Schaeffler (FAG / INA)",
+      "url": "https://www.schaeffler.in/sales-partners",
+      "search_url": "https://www.schaeffler.in/sales-partners",
+      "what_it_finds": "Official FAG & INA certified stockists and channel partners.",
+      "brands": ["FAG", "INA", "SCHAEFFLER"],
+      "genuine_oem": true,
+      "lead_note": "Guaranteed genuine OEM — confirm stock with the partner"
+    },
+    {
+      "name": "NSK India",
+      "url": "https://www.nsk.com/in/distributors",
+      "search_url": "https://www.nsk.com/in/distributors",
+      "what_it_finds": "Authorized NSK precision bearing dealers in major hubs.",
+      "brands": ["NSK"],
+      "genuine_oem": true,
+      "lead_note": "Guaranteed genuine OEM — confirm stock with the dealer"
+    },
+    {
+      "name": "Timken India",
+      "url": "https://www.timken.com/where-to-buy",
+      "search_url": "https://www.timken.com/where-to-buy",
+      "what_it_finds": "Official Timken tapered roller & ball bearing stockists.",
+      "brands": ["TIMKEN"],
+      "genuine_oem": true,
+      "lead_note": "Guaranteed genuine OEM — confirm stock with the stockist"
+    }
+  ],
+  "india_b2b": [
+    {
+      "name": "Moglix",
+      "url": "https://www.moglix.com",
+      "search_url": "https://www.moglix.com/search?q={query}",
+      "what_it_finds": "Instant stock and pricing for SKF, FAG, NBC, NSK, belts, and tools.",
+      "lead_note": "Typically 24–48 hour dispatch to industrial estates"
+    },
+    {
+      "name": "Industrybuying",
+      "url": "https://www.industrybuying.com",
+      "search_url": "https://www.industrybuying.com/search/?q={query}",
+      "what_it_finds": "Industrial machinery spares, motors, bearings, and power transmission.",
+      "lead_note": "GST invoice and estate delivery"
+    },
+    {
+      "name": "IndiaMART",
+      "url": "https://www.indiamart.com",
+      "search_url": "https://dir.indiamart.com/search.mp?ss={query}",
+      "what_it_finds": "Verified local wholesale stockists (Peenya, Ambattur, Bhosari, Manesar, Coimbatore).",
+      "lead_note": "Ask the stockist for same-day local pickup"
+    }
+  ],
+  "global_mro": [
+    {
+      "name": "RS Components India",
+      "url": "https://in.rs-online.com",
+      "search_url": "https://in.rs-online.com/web/c/?searchTerm={query}",
+      "what_it_finds": "Global MRO catalog — 500,000+ industrial parts, 24–48 hour dispatch.",
+      "lead_note": "India and global dispatch"
+    },
+    {
+      "name": "Grainger",
+      "url": "https://www.grainger.com",
+      "search_url": "https://www.grainger.com/search?searchQuery={query}",
+      "what_it_finds": "Worldwide industrial supply catalog with EDI/API ordering.",
+      "lead_note": "Best for imported / multi-plant spares"
+    },
+    {
+      "name": "DirectIndustry",
+      "url": "https://www.directindustry.com",
+      "search_url": "https://www.directindustry.com/prod/search.html?search={query}",
+      "what_it_finds": "Global B2B portal to manufacturers in Germany, Japan, USA, and Europe.",
+      "lead_note": "RFQ the manufacturer — not a same-day stockist"
+    }
+  ]
+}

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Gbotz APMS | Industrial Predictive Maintenance Portal</title>
+  <link rel="stylesheet" href="styles.css?v=20260908_06" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Top Header Navigation (pdm-sensor Topbar style) -->
+  <header>
+    <div class="brand-group">
+      <div class="brand-badge">AI</div>
+      <div class="brand-titles">
+        <h1>
+          Predictive Maintenance System
+          <span class="badge badge-good" id="topbar-condition-badge">Good</span>
+        </h1>
+        <p id="topbar-company-subtitle">Demo Company · Factory Floor 1 · Industrial Plant Assets</p>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="machine-select-wrapper">
+        <label for="machine-select">Asset:</label>
+        <select id="machine-select" onchange="handleMachineChange(this.value)">
+          <option value="" disabled selected>⚡ Discovering live assets (MQTT/API)...</option>
+        </select>
+      </div>
+
+      <div class="live-indicator" title="Connected to MQTT Broker 165.22.244.151:1883">
+        <span class="live-dot"></span>
+        <span id="mqtt-live-text">MQTT Live (2s)</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline" id="btn-refresh" onclick="runDiagnostics(false)" title="Execute instant multi-agent diagnosis">
+        ↻ Refresh
+      </button>
+      <button class="btn btn-primary" id="btn-run-pdm" onclick="runDiagnostics(true)" title="Trigger LangGraph 4-Agent Pipeline">
+        ⚡ Run AI Diagnostic
+      </button>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="main-wrapper">
+
+    <!-- Top Navigation Tabs (pdm-sensor MachineTabs style) -->
+    <nav class="nav-tabs" aria-label="Dashboard Views">
+      <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
+      <button class="tab-btn" onclick="switchTab('agents')">🧠 4-Agent Pipeline</button>
+      <button class="tab-btn" onclick="switchTab('vibration')">📈 Vibration & STFT</button>
+      <button class="tab-btn" onclick="switchTab('thermal')">🌡️ Thermal De-Weathering</button>
+      <button class="tab-btn" onclick="switchTab('electrical')">🔌 3-Phase Power</button>
+      <button class="tab-btn" onclick="switchTab('workorder')">📋 SAP PM Work Order</button>
+    </nav>
+
+    <!-- KPI Row (pdm-sensor KpiTile strip) -->
+    <section class="kpi-row">
+      <div class="kpi-tile">
+        <div class="kpi-tile-info">
+          <span class="kpi-tile-label">Machine Health</span>
+          <span class="kpi-tile-value" id="kpi-health-val" style="color: var(--accent);">98%</span>
+          <span class="kpi-tile-sub">Overall ISO 10816 Asset Index</span>
+        </div>
+        <div class="kpi-tile-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+      </div>
+
+      <div class="kpi-tile">
+        <div class="kpi-tile-info">
+          <span class="kpi-tile-label">Operating Status</span>
+          <span class="kpi-tile-value" id="kpi-status-val" style="color: var(--status-good);">Online</span>
+          <span class="kpi-tile-sub" id="kpi-status-sub">Continuous Rotation @ 1,480 RPM</span>
+        </div>
+        <div class="kpi-tile-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--status-good)" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+      </div>
+
+      <div class="kpi-tile">
+        <div class="kpi-tile-info">
+          <span class="kpi-tile-label">Remaining Useful Life (RUL)</span>
+          <span class="kpi-tile-value" id="kpi-rul-val" style="color: #60a5fa;">51.5 Days</span>
+          <span class="kpi-tile-sub" id="kpi-rul-hours">1,236 Operating Hours (Weibull B10)</span>
+        </div>
+        <div class="kpi-tile-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+      </div>
+
+      <div class="kpi-tile">
+        <div class="kpi-tile-info">
+          <span class="kpi-tile-label">Isolated Failure Domain</span>
+          <span class="kpi-tile-value" id="kpi-domain-val" style="color: var(--text-primary);">Mechanical</span>
+          <span class="kpi-tile-sub" id="kpi-pattern-val">Pattern: STABLE (Slope 0.000)</span>
+        </div>
+        <div class="kpi-tile-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--status-warning)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="tab-content">
+      <div class="overview-layout">
+        <!-- Main Telemetry & Analytics Column -->
+        <div class="overview-main-col">
+
+          <!-- Gauge Stat Cards Grid (RPM, Vib, Motor Temp, Load, Power, Humidity) -->
+          <section class="gauges-grid">
+            <div class="gauge-card">
+              <div class="gauge-card-header">
+                <span>RPM</span>
+                <span class="badge badge-good" id="badge-rpm">Normal</span>
+              </div>
+              <div class="gauge-svg-container">
+                <svg width="120" height="75" viewBox="0 0 120 75">
+                  <path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--surface-3)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="arc-rpm" d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="141" stroke-dashoffset="35"/>
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-val" id="val-rpm">1,480</span>
+                  <span class="gauge-unit">RPM</span>
+                </div>
+              </div>
+              <div class="gauge-card-footer">Setpoint: 1,480 RPM</div>
+            </div>
+
+            <div class="gauge-card">
+              <div class="gauge-card-header">
+                <span>Vibration</span>
+                <span class="badge badge-good" id="badge-vib">Zone A/B</span>
+              </div>
+              <div class="gauge-svg-container">
+                <svg width="120" height="75" viewBox="0 0 120 75">
+                  <path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--surface-3)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="arc-vib" d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--status-good)" stroke-width="10" stroke-linecap="round" stroke-dasharray="141" stroke-dashoffset="110"/>
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-val" id="val-vib">1.82</span>
+                  <span class="gauge-unit">mm/s RMS</span>
+                </div>
+              </div>
+              <div class="gauge-card-footer">ISO Limit: 4.5 mm/s</div>
+            </div>
+
+            <div class="gauge-card">
+              <div class="gauge-card-header">
+                <span>Motor Temp</span>
+                <span class="badge badge-good" id="badge-temp-motor">Normal</span>
+              </div>
+              <div class="gauge-svg-container">
+                <svg width="120" height="75" viewBox="0 0 120 75">
+                  <path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--surface-3)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="arc-temp-motor" d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--status-good)" stroke-width="10" stroke-linecap="round" stroke-dasharray="141" stroke-dashoffset="75"/>
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-val" id="val-temp-motor">48.5</span>
+                  <span class="gauge-unit">°C</span>
+                </div>
+              </div>
+              <div class="gauge-card-footer">De-weathered ΔT: +23.5°C</div>
+            </div>
+
+            <div class="gauge-card">
+              <div class="gauge-card-header">
+                <span>Compressor Temp</span>
+                <span class="badge badge-good" id="badge-temp-comp">Normal</span>
+              </div>
+              <div class="gauge-svg-container">
+                <svg width="120" height="75" viewBox="0 0 120 75">
+                  <path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--surface-3)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="arc-temp-comp" d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--series-4)" stroke-width="10" stroke-linecap="round" stroke-dasharray="141" stroke-dashoffset="65"/>
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-val" id="val-temp-comp">52.1</span>
+                  <span class="gauge-unit">°C</span>
+                </div>
+              </div>
+              <div class="gauge-card-footer" id="footer-temp-comp">Threshold: 80°C</div>
+            </div>
+
+            <div class="gauge-card">
+              <div class="gauge-card-header">
+                <span>Machine Load</span>
+                <span class="badge badge-good" id="badge-load">Nominal</span>
+              </div>
+              <div class="gauge-svg-container">
+                <svg width="120" height="75" viewBox="0 0 120 75">
+                  <path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--surface-3)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="arc-load" d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="141" stroke-dashoffset="40"/>
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-val" id="val-load">78.5</span>
+                  <span class="gauge-unit">%</span>
+                </div>
+              </div>
+              <div class="gauge-card-footer">Active Power: <span id="val-power">28.4</span> kW</div>
+            </div>
+
+            <div class="gauge-card">
+              <div class="gauge-card-header">
+                <span>Voltage Imbalance</span>
+                <span class="badge badge-good" id="badge-vuf">Good</span>
+              </div>
+              <div class="gauge-svg-container">
+                <svg width="120" height="75" viewBox="0 0 120 75">
+                  <path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--surface-3)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="arc-vuf" d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="var(--status-good)" stroke-width="10" stroke-linecap="round" stroke-dasharray="141" stroke-dashoffset="115"/>
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-val" id="val-vuf">1.20</span>
+                  <span class="gauge-unit">% VUF</span>
+                </div>
+              </div>
+              <div class="gauge-card-footer">IEC Standard: &lt; 2.0%</div>
+            </div>
+          </section>
+
+          <!-- Motor Fault Indicators Grid (pdm-sensor FaultGauge style) -->
+          <section class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Diagnostic Fault Classes &amp; Confidence Indicators</h3>
+                <p>Monitored via ISO 13379 Harmonics, Hilbert Demodulated Envelope Spectrum &amp; PINNs Models</p>
+              </div>
+              <span class="badge badge-good" id="fault-indicator-summary">All Fault Levels Nominal</span>
+            </div>
+
+            <div class="fault-grid" id="fault-indicators-container">
+              <!-- Fault gauges populated dynamically by JS -->
+            </div>
+          </section>
+
+          <!-- Quick Dual Trend Line Charts -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Vibration Trend (RMS mm/s)</h3>
+                  <p id="vib-chart-subtitle">IMU Acceleration vs Warning Threshold (4.5 mm/s)</p>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-vibration"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Thermal Profile (°C)</h3>
+                  <p>Stator Winding vs Compressor Head vs Ambient Factory Floor</p>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-thermal"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- AI Assistant Side Banner Column -->
+        <aside class="overview-side-banner">
+          <section class="assistant-panel side-banner-panel" id="actionable-assistant-panel">
+            <div class="assistant-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="assistant-badge">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
+                  AI Assistant
+                </span>
+                <span class="badge badge-good" id="diag-severity-badge">NOMINAL</span>
+              </div>
+              <span class="badge badge-good" id="diag-badge-gatekeeper" style="font-size: 11px;">Validated</span>
+            </div>
+
+            <div class="repair-options-grid">
+              <!-- Card 1: Issue Identified -->
+              <div class="repair-card repair-card-issue" id="card-issue">
+                <div class="repair-card-header">
+                  <span class="repair-step-tag tag-issue">🔴 Issue Identified</span>
+                  <span class="confidence-tag" id="issue-confidence">Confidence: 98%</span>
+                </div>
+                <div class="repair-title" id="issue-title">All Monitored Parameters Operating Nominally</div>
+                <div class="repair-meta-row">
+                  <span class="meta-label">Exact Location:</span>
+                  <span class="meta-value" id="issue-location">Motor DE / NDE &amp; Compressor Bearings</span>
+                </div>
+                <div class="repair-meta-row">
+                  <span class="meta-label">Dominant Harmonics:</span>
+                  <span class="meta-value" id="issue-harmonic">Baseline 1X (29.8 Hz)</span>
+                </div>
+                <div class="repair-mechanism" id="issue-mechanism">
+                  Vibration RMS, envelope demodulated spectrum, and thermal signatures indicate healthy elastohydrodynamic lubrication film and steady rotor dynamics.
+                </div>
+                <div class="repair-benefit-box">
+                  <span class="benefit-label">Senior Field Tip</span>
+                  <span id="issue-tip">Maintain standard ISO 10816-3 quarterly inspection intervals. Avoid unnecessary over-greasing.</span>
+                </div>
+              </div>
+
+              <!-- Card 2: Option 1 (Immediate Field Triage) -->
+              <div class="repair-card repair-card-opt1" id="card-opt1">
+                <div class="repair-card-header">
+                  <span class="repair-step-tag tag-opt1">🟡 Option 1: Immediate Field Triage</span>
+                  <span class="time-tag">Downtime: 0 - 15 Mins</span>
+                </div>
+                <div class="repair-title" id="opt1-title">Routine Verification &amp; In-Service Monitoring</div>
+                <div class="repair-meta-row">
+                  <span class="meta-label">Objective:</span>
+                  <span class="meta-value">Keep plant running safely without emergency shutdown</span>
+                </div>
+                <div class="repair-content" id="opt1-desc">
+                  Execute routine physical inspection of grease nipples, acoustic listening probe check, and verify motor cooling fan cover is clear of dust accumulation.
+                </div>
+                <div class="repair-benefit-box">
+                  <span class="benefit-label">Immediate Impact</span>
+                  <span id="opt1-impact">Prevents false trips, mitigates early temperature rise, and validates telemetry accuracy.</span>
+                </div>
+                <button class="btn btn-outline btn-sm" id="btn-apply-opt1" style="margin-top: 10px; width: 100%;">
+                  Log Triage to Daily Shift Log
+                </button>
+              </div>
+
+              <!-- Card 3: Option 2 (Planned Permanent Overhaul) -->
+              <div class="repair-card repair-card-opt2" id="card-opt2">
+                <div class="repair-card-header">
+                  <span class="repair-step-tag tag-opt2">🟢 Option 2: Planned Permanent Overhaul</span>
+                  <span class="time-tag" id="opt2-duration">Est. Downtime: 2.5 Hrs</span>
+                </div>
+                <div class="repair-title" id="opt2-title">Next Scheduled Overhaul Procedure</div>
+                <div class="repair-meta-row">
+                  <span class="meta-label">Required Tools &amp; BOM:</span>
+                  <span class="meta-value" id="opt2-tools">Induction Heater, SKF 6208-2RS1, Laser Alignment Kit</span>
+                </div>
+                <div class="repair-content" id="opt2-steps">
+                  1. Schedule during planned plant weekend shutdown window.<br>
+                  2. Perform LOTO and precision mechanical replacement.<br>
+                  3. Perform laser alignment and post-overhaul 60s baseline vibration check.
+                </div>
+                <div class="repair-tools-box">
+                  <span class="benefit-label">CMMS Auto-Integration</span>
+                  <span>SAP PM Work Order automatically staged with reserved warehouse spares.</span>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btn-dispatch-opt2" style="margin-top: 10px; width: 100%;">
+                  Dispatch SAP PM Overhaul WO
+                </button>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: MULTI-AGENT PIPELINE -->
+    <div id="tab-agents" class="tab-content" style="display: none; flex-direction: column; gap: 16px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h3>LangGraph 4-Agent Execution Architecture</h3>
+            <p>Deterministic Multi-Agent State Machine running on FastAPI &amp; Redis</p>
+          </div>
+          <span class="badge badge-good">Active Multi-Agent DAG</span>
+        </div>
+
+        <div class="agent-pipeline-grid">
+          <div class="agent-box active-step" id="agent-box-alpha">
+            <div class="agent-header">
+              <span class="agent-tag alpha">Agent Alpha</span>
+              <span class="badge badge-good" id="badge-agent-alpha">Passed</span>
+            </div>
+            <div class="agent-title">11-Rule Hardware Gatekeeper</div>
+            <div class="agent-desc">
+              Validates electrical connection, eliminates flatlines, stuck sensors, and disconnected cables. Detects 5 temporal wear patterns (Steady Climb, Stuck High, Sudden Jump, Noise Expansion, Repeated Spikes).
+            </div>
+            <div class="agent-output-badge" id="out-agent-alpha">Status: VALID | Pattern: STABLE</div>
+          </div>
+
+          <div class="agent-box active-step" id="agent-box-beta">
+            <div class="agent-header">
+              <span class="agent-tag beta">Agent Beta</span>
+              <span class="badge badge-good" id="badge-agent-beta">Passed</span>
+            </div>
+            <div class="agent-title">Thermal De-Weathering &amp; Quality</div>
+            <div class="agent-desc">
+              Performs dynamic ambient drift subtraction (ΔT) and calculates 3-phase Voltage Unbalance Factor (VUF) and Current Unbalance (IUF). Isolates failure domain: MECHANICAL vs ELECTRICAL.
+            </div>
+            <div class="agent-output-badge" id="out-agent-beta">Domain: MECHANICAL | VUF: 1.20%</div>
+          </div>
+
+          <div class="agent-box active-step" id="agent-box-gamma">
+            <div class="agent-header">
+              <span class="agent-tag gamma">Agent Gamma</span>
+              <span class="badge badge-good" id="badge-agent-gamma">Active</span>
+            </div>
+            <div class="agent-title">Envelope FFT &amp; PINNs Prognostics</div>
+            <div class="agent-desc">
+              Demodulates high-frequency bearing impacts (BPFI/BPFO/BSF) using Hilbert Transform + 0–50 Hz STFT spectrogram. Calculates Paris' Law crack growth &amp; 2-parameter Weibull B10/B50 curves.
+            </div>
+            <div class="agent-output-badge" id="out-agent-gamma">Defect: MF001 | RUL: 51.5 Days</div>
+          </div>
+
+          <div class="agent-box active-step" id="agent-box-delta">
+            <div class="agent-header">
+              <span class="agent-tag delta">Agent Delta</span>
+              <span class="badge badge-good" id="badge-agent-delta">Ready</span>
+            </div>
+            <div class="agent-title">Autonomous ERP / CMMS Dispatch</div>
+            <div class="agent-desc">
+              Pre-reserves warehouse spare parts, generates SAP PM Work Orders, coordinates OEM vs certified compatible sourcing, and attaches 30-year expert repair procedures.
+            </div>
+            <div class="agent-output-badge" id="out-agent-delta">WO: WO-8921-2026 | Bin #A-14</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: VIBRATION & STFT -->
+    <div id="tab-vibration" class="tab-content" style="display: none; flex-direction: column; gap: 16px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h3>Hilbert Demodulated Envelope FFT Spectrum (0–500 Hz)</h3>
+            <p>Demodulates high-frequency shock pulses into characteristic defect frequencies: BPFI (162.4 Hz), BPFO (108.2 Hz), 1X (24.7 Hz), 2X (49.3 Hz)</p>
+          </div>
+          <span class="badge badge-good" id="badge-fft-status">Harmonic Extraction Clean</span>
+        </div>
+        <div class="chart-container" style="height: 300px;">
+          <canvas id="chart-fft"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h3>Triaxial Accelerometer Waveforms (X, Y, Z Channels)</h3>
+            <p>Real-time high-rate time domain acceleration data (G-level)</p>
+          </div>
+        </div>
+        <div class="chart-container" style="height: 240px;">
+          <canvas id="chart-waveform"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: THERMAL DE-WEATHERING -->
+    <div id="tab-thermal" class="tab-content" style="display: none; flex-direction: column; gap: 16px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h3>Dynamic Ambient Drift Subtraction Engine</h3>
+            <p>Eliminates false thermal alarms caused by summer factory heat by comparing (T_motor - T_ambient) against baseline</p>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div class="kpi-tile">
+            <div class="kpi-tile-info">
+              <span class="kpi-tile-label">Motor Raw Temperature</span>
+              <span class="kpi-tile-value" id="thermal-raw-motor">48.5 °C</span>
+              <span class="kpi-tile-sub">Direct stator PT100 sensor</span>
+            </div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-tile-info">
+              <span class="kpi-tile-label">Ambient Floor Temperature</span>
+              <span class="kpi-tile-value" id="thermal-raw-ambient">25.0 °C</span>
+              <span class="kpi-tile-sub">Factory hall thermocouple</span>
+            </div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-tile-info">
+              <span class="kpi-tile-label">De-Weathered Rise (ΔT)</span>
+              <span class="kpi-tile-value" id="thermal-delta" style="color: var(--status-good);">+23.5 °C</span>
+              <span class="kpi-tile-sub" id="dewether-threshold-badge">Threshold: +35.0 °C Rise</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: ELECTRICAL 3-PHASE QUALITY -->
+    <div id="tab-electrical" class="tab-content" style="display: none; flex-direction: column; gap: 16px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h3>3-Phase Electrical Power Quality (Energymeter Feed)</h3>
+            <p>Real-time current and voltage telemetry per phase with unbalance calculations</p>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div class="kpi-tile">
+            <div class="kpi-tile-info">
+              <span class="kpi-tile-label">Phase Currents (R / Y / B)</span>
+              <span class="kpi-tile-value" id="elec-currents" style="font-size: 16px;">14.2A · 14.1A · 14.0A</span>
+              <span class="kpi-tile-sub">Current Unbalance: 0.8%</span>
+            </div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-tile-info">
+              <span class="kpi-tile-label">Line Voltages (R / Y / B)</span>
+              <span class="kpi-tile-value" id="elec-voltages" style="font-size: 16px;">400V · 401V · 399V</span>
+              <span class="kpi-tile-sub">Voltage Unbalance (VUF): 1.2%</span>
+            </div>
+          </div>
+          <div class="kpi-tile">
+            <div class="kpi-tile-info">
+              <span class="kpi-tile-label">Power Factor &amp; THD</span>
+              <span class="kpi-tile-value" id="elec-pf" style="font-size: 16px;">0.92 pf · 1.8% THD</span>
+              <span class="kpi-tile-sub">Clean sinusoidal supply</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: SAP PM WORK ORDER -->
+    <div id="tab-workorder" class="tab-content" style="display: none; flex-direction: column; gap: 16px;">
+      <div class="work-order-card" id="wo-container">
+        <div class="wo-header">
+          <div>
+            <div class="wo-id" id="wo-id-display">SAP-WO-8921-2026</div>
+            <p style="font-size: 11px; color: var(--text-muted);">Autonomous Preventive Maintenance Order</p>
+          </div>
+          <span class="badge badge-good" id="wo-sap-status">SAP ERP Ready</span>
+        </div>
+
+        <div class="wo-meta-grid">
+          <div class="wo-meta-item">
+            <span>Assigned Machine</span>
+            <span id="wo-machine-id">compressor_unit_01 (Screw Compressor Line A)</span>
+          </div>
+          <div class="wo-meta-item">
+            <span>Scheduled Downtime Window</span>
+            <span id="wo-window">Sunday 02:00 AM – 06:00 AM (Next Shift Break)</span>
+          </div>
+          <div class="wo-meta-item">
+            <span>Reserved Warehouse Bin</span>
+            <span id="wo-bin" style="color: #60a5fa;">Warehouse Bin #A-14 (Locked)</span>
+          </div>
+          <div class="wo-meta-item">
+            <span>Required Spare Part</span>
+            <span id="wo-part">SKF 6208-2RS1 Deep Groove Ball Bearing</span>
+          </div>
+          <div class="wo-meta-item">
+            <span>Supplier Sourcing Status</span>
+            <span id="wo-sourcing">OEM Direct Confirmed (Lead time: 3 days &lt;= RUL 51.5d)</span>
+          </div>
+          <div class="wo-meta-item">
+            <span>Estimated Downtime</span>
+            <span id="wo-downtime">4.0 Hours</span>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+          <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Expert Field Procedure:</span>
+          <p id="wo-guidance" style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5;">
+            Option A: Immediate field triage with Polyurea EM grease re-lubrication (15g). Option B: Scheduled bearing replacement using 110°C induction heater. Zero cold-hammering on bearing raceways.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Simulation Scenario Switcher (At Bottom of Dashboard) -->
+    <section class="sim-bar">
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 12px; font-weight: 600;">🎮 Industrial Fault Injector (Live Test Scenarios)</span>
+        <span style="font-size: 11px; color: var(--text-muted);">Simulate physical defects to test Agent Alpha, Beta, Gamma, and Delta responses live</span>
+      </div>
+
+      <div class="sim-btn-group">
+        <button class="btn btn-outline" onclick="injectScenario('nominal')">
+          🟢 Nominal Clear
+        </button>
+        <button class="btn btn-outline" onclick="injectScenario('cable_cut')" style="border-color: #ef4444; color: #f87171;">
+          ⚡ Cable Fault (Alpha Halt)
+        </button>
+        <button class="btn btn-outline" onclick="injectScenario('misalignment')">
+          🟠 2X Misalignment (MF002)
+        </button>
+        <button class="btn btn-outline" onclick="injectScenario('bearing_bpfi')" style="border-color: #3b82f6; color: #60a5fa;">
+          🔴 Bearing BPFI Spall (162.4 Hz)
+        </button>
+        <button class="btn btn-outline" onclick="injectScenario('voltage_unbalance')">
+          ⚡ Voltage Unbalance (Beta VUF)
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js?v=20260908_08"></script>
+</body>
+</html>

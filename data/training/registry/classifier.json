@@ -1,0 +1,28 @@
+{
+  "version": "xgb-20260916",
+  "class_names": [
+    "BPFI",
+    "BPFO",
+    "NORMAL"
+  ],
+  "feature_keys": [
+    "imuAcceleration",
+    "emVoltageImbalance",
+    "emMachineLoad",
+    "tempMotor",
+    "tempAmbient",
+    "deltaTemp",
+    "patternCode",
+    "domainCode",
+    "matchedCode"
+  ],
+  "n_windows": 1204,
+  "by_label": {
+    "NORMAL": 160,
+    "BPFI": 348,
+    "BPFO": 696
+  },
+  "production_grade": true,
+  "experimental": false,
+  "written_at": "2026-09-16T06:53:52.932740+00:00"
+}

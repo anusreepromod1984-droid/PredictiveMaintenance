@@ -1,0 +1,1055 @@
+/* ==========================================================================
+   APMS Industrial Predictive Maintenance Design System
+   Matches pdm-sensor / dataviz palette and component ergonomics
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+  --surface-0: #080808;
+  --surface-1: #131312;
+  --surface-2: #1a1a19;
+  --surface-3: #242422;
+  --surface-card: #161615;
+  --surface-hover: #222220;
+
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+
+  --hairline: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255, 255, 255, 0.08);
+
+  --accent: #3987e5;
+  --accent-rgb: 57, 135, 229;
+  --accent-soft: rgba(57, 135, 229, 0.15);
+
+  --status-good: #0ca30c;
+  --status-good-rgb: 12, 163, 12;
+  --status-good-soft: rgba(12, 163, 12, 0.15);
+
+  --status-warning: #fab219;
+  --status-warning-rgb: 250, 178, 25;
+  --status-warning-soft: rgba(250, 178, 25, 0.15);
+
+  --status-critical: #d03b3b;
+  --status-critical-rgb: 208, 59, 59;
+  --status-critical-soft: rgba(208, 59, 59, 0.15);
+
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #e66767;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--surface-0);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Header & Navigation
+   ========================================================================== */
+header {
+  background-color: var(--surface-1);
+  border-bottom: 1px solid var(--hairline);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.4);
+}
+
+.brand-titles h1 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-titles p {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.machine-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.machine-select-wrapper label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.machine-select-wrapper select {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.machine-select-wrapper select option {
+  background: var(--surface-2);
+  color: #fff;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--status-good-soft);
+  color: var(--status-good);
+  border: 1px solid rgba(12, 163, 12, 0.3);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--status-good);
+  box-shadow: 0 0 8px var(--status-good);
+  animation: pulse-dot 1.8s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.btn-outline {
+  background: var(--surface-2);
+  border-color: var(--hairline);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  background: var(--surface-3);
+  border-color: var(--baseline);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(57, 135, 229, 0.3);
+}
+
+.btn-primary:hover {
+  background: #4a94ed;
+}
+
+.btn-warning {
+  background: var(--status-warning-soft);
+  border-color: rgba(250, 178, 25, 0.4);
+  color: var(--status-warning);
+}
+
+.btn-warning:hover {
+  background: rgba(250, 178, 25, 0.25);
+}
+
+.btn-critical {
+  background: var(--status-critical-soft);
+  border-color: rgba(208, 59, 59, 0.4);
+  color: var(--status-critical);
+}
+
+.btn-critical:hover {
+  background: rgba(208, 59, 59, 0.25);
+}
+
+/* ==========================================================================
+   Layout Containers
+   ========================================================================== */
+.main-wrapper {
+  max-width: 1720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ==========================================================================
+   Tab Navigation Strip
+   ========================================================================== */
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 2px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.15s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-1);
+}
+
+.tab-btn.active {
+  color: #ffffff;
+  background: var(--surface-card);
+  font-weight: 600;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   KPI Tile Bar (pdm-sensor KpiTile style)
+   ========================================================================== */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.kpi-tile {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: border-color 0.15s ease;
+}
+
+.kpi-tile:hover {
+  border-color: var(--baseline);
+}
+
+.kpi-tile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kpi-tile-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.kpi-tile-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.kpi-tile-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.kpi-tile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+}
+
+/* ==========================================================================
+   Gauge Stat Cards Grid (pdm-sensor GaugeStatCard style)
+   ========================================================================== */
+.gauges-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 1300px) {
+  .gauges-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .gauges-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.gauge-card {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.gauge-card-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.gauge-svg-container {
+  position: relative;
+  width: 120px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-svg-container svg {
+  overflow: visible;
+}
+
+.gauge-center-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge-val {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.gauge-unit {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.gauge-card-footer {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Card Component
+   ========================================================================== */
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-title-group h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-title-group p {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Fault Gauges Grid (Motor Fault Indicators)
+   ========================================================================== */
+.fault-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.fault-card {
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.fault-card.breached {
+  border-color: var(--status-critical);
+  background: rgba(208, 59, 59, 0.08);
+}
+
+.fault-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fault-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--surface-3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.fault-card.breached .fault-code {
+  color: var(--status-critical);
+  background: rgba(208, 59, 59, 0.2);
+}
+
+.fault-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.fault-bar-container {
+  width: 100%;
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.fault-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+  background: var(--status-good);
+}
+
+.fault-bar-fill.warning { background: var(--status-warning); }
+.fault-bar-fill.critical { background: var(--status-critical); }
+
+.fault-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Multi-Agent 4-Stage Diagnostic Pipeline Bar
+   ========================================================================== */
+.agent-pipeline-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 1100px) {
+  .agent-pipeline-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .agent-pipeline-grid { grid-template-columns: 1fr; }
+}
+
+.agent-box {
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.agent-box.active-step {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(57, 135, 229, 0.15);
+}
+
+.agent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agent-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-3);
+  color: var(--text-secondary);
+}
+
+.agent-tag.alpha { color: #60a5fa; background: rgba(37, 99, 235, 0.15); }
+.agent-tag.beta { color: #f59e0b; background: rgba(245, 158, 11, 0.15); }
+.agent-tag.gamma { color: #10b981; background: rgba(16, 185, 129, 0.15); }
+.agent-tag.delta { color: #ec4899; background: rgba(236, 72, 153, 0.15); }
+
+.agent-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.agent-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.agent-output-badge {
+  margin-top: auto;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  border: 1px solid var(--hairline);
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   AI Fault Assistant Panel (pdm-sensor AiFaultAssistant Style)
+   ========================================================================== */
+.assistant-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.assistant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.assistant-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.diag-summary-box {
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.diag-headline {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.diag-reasoning {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   CMMS SAP PM Work Order Card
+   ========================================================================== */
+.work-order-card {
+  background: linear-gradient(145deg, #181c24, #12151c);
+  border: 1px solid rgba(57, 135, 229, 0.3);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.wo-id {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #60a5fa;
+}
+
+.wo-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  font-size: 11px;
+}
+
+.wo-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wo-meta-item span:first-child {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.wo-meta-item span:last-child {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Canvas & Chart Containers
+   ========================================================================== */
+.chart-container {
+  width: 100%;
+  height: 250px;
+  position: relative;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  border: 1px solid var(--hairline);
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* ==========================================================================
+   Simulation Control Bar
+   ========================================================================== */
+.sim-bar {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sim-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.badge-good { background: var(--status-good-soft); color: var(--status-good); border: 1px solid rgba(12, 163, 12, 0.3); }
+.badge-warning { background: var(--status-warning-soft); color: var(--status-warning); border: 1px solid rgba(250, 178, 25, 0.3); }
+.badge-critical { background: var(--status-critical-soft); color: var(--status-critical); border: 1px solid rgba(208, 59, 59, 0.3); }
+
+/* Interactive Feedback: Toast Notification & Card Pulse */
+.toast-notification {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: var(--surface-card);
+  border: 1px solid var(--accent);
+  color: var(--text-primary);
+  padding: 14px 22px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 99999;
+  animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+@keyframes slideInToast {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.pulse-highlight {
+  animation: pulseGlow 1.2s ease-in-out;
+}
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 rgba(57, 135, 229, 0); }
+  50% { box-shadow: 0 0 25px rgba(57, 135, 229, 0.6); border-color: var(--accent); }
+  100% { box-shadow: 0 0 0 rgba(57, 135, 229, 0); }
+}
+
+/* Actionable AI Repair Playbook (Issue + 2 Solvable Options) */
+.repair-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.repair-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.repair-card:hover {
+  transform: translateY(-2px);
+}
+
+.repair-card-issue {
+  border-color: rgba(208, 59, 59, 0.4);
+  background: linear-gradient(180deg, rgba(208, 59, 59, 0.08) 0%, var(--surface-2) 100%);
+}
+
+.repair-card-opt1 {
+  border-color: rgba(250, 178, 25, 0.4);
+  background: linear-gradient(180deg, rgba(250, 178, 25, 0.08) 0%, var(--surface-2) 100%);
+}
+
+.repair-card-opt2 {
+  border-color: rgba(12, 163, 12, 0.4);
+  background: linear-gradient(180deg, rgba(12, 163, 12, 0.08) 0%, var(--surface-2) 100%);
+}
+
+.repair-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.repair-step-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.tag-issue { background: rgba(208, 59, 59, 0.2); color: #ef4444; border: 1px solid rgba(208, 59, 59, 0.3); }
+.tag-opt1 { background: rgba(250, 178, 25, 0.2); color: #f59e0b; border: 1px solid rgba(250, 178, 25, 0.3); }
+.tag-opt2 { background: rgba(12, 163, 12, 0.2); color: #10b981; border: 1px solid rgba(12, 163, 12, 0.3); }
+
+.confidence-tag, .time-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.repair-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+.repair-meta-row {
+  display: flex;
+  font-size: 12px;
+  gap: 6px;
+}
+
+.meta-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.meta-value {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.repair-mechanism, .repair-content {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.repair-benefit-box, .repair-tools-box {
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: auto;
+}
+
+.benefit-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Overview 2-Column Dashboard Layout with AI Assistant Side Banner
+   ========================================================================== */
+.overview-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 20px;
+  align-items: start;
+}
+
+.overview-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.overview-side-banner {
+  position: sticky;
+  top: 76px;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.overview-side-banner::-webkit-scrollbar {
+  width: 5px;
+}
+
+.overview-side-banner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overview-side-banner::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 4px;
+}
+
+.overview-side-banner::-webkit-scrollbar-thumb:hover {
+  background: var(--hairline);
+}
+
+.side-banner-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.side-banner-panel .assistant-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.side-banner-panel .repair-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+.side-banner-panel .repair-card {
+  padding: 14px;
+  gap: 8px;
+}
+
+.side-banner-panel .repair-title {
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+@media (max-width: 1280px) {
+  .overview-layout {
+    grid-template-columns: 1fr;
+  }
+  .overview-side-banner {
+    position: static;
+    max-height: none;
+  }
+  .side-banner-panel .repair-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  }
+}
