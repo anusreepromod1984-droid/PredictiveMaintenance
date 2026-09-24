@@ -130,9 +130,20 @@ def to_frontend_telemetry(raw: Dict[str, Any], machine_id: str, ts_ms: Optional[
         display_load = round(nameplate_load, 1)
     else:
         display_load = reported_load
+
+    p_val = _num(raw, "pressure")
+    is_on = i_max >= 2.0 or display_power >= 0.5 or _num(raw, "rpm") >= 100.0
+    if is_on:
+        operating_state = "running"
+    elif p_val >= 1.0:
+        operating_state = "standby"
+    else:
+        operating_state = "stopped"
+
     return {
         "machineId": str(mid),
         "timestamp": int(ts),
+        "operatingState": operating_state,
         "availableFields": available,
         "missingFields": missing,
         "imuAcceleration": _num(raw, "imuAcceleration", "imu_acceleration"),
@@ -381,6 +392,26 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
             except Exception:
                 pass
 
+    telem: Dict[str, Any] = {}
+    if _mqtt_service:
+        try:
+            telem = _mqtt_service.get_asset_telemetry(machine_id) or {}
+        except Exception:
+            pass
+
+    # Logaeshwaran plant rule:
+    # Off: <= 0.5 A (~0 Amps)
+    # On:  >= 2.0 Amps (typical running load ~4.0 A)
+    i_max_diag = max(
+        float(telem.get("emIr") or telem.get("em_ir") or 0.0),
+        float(telem.get("emIy") or telem.get("em_iy") or 0.0),
+        float(telem.get("emIb") or telem.get("em_ib") or 0.0),
+    )
+    kw_diag = float(telem.get("emPower") or telem.get("em_power") or 0.0)
+    rpm_diag = float(telem.get("rpm") or 0.0)
+    pressure_diag = float(telem.get("pressure") or 0.0)
+    is_motor_on = i_max_diag >= 2.0 or kw_diag >= 0.5 or rpm_diag >= 100.0
+
     if halted:
         headline = f"Sensor Anomaly Halted: {cable_status}"
         severity = "warning" if missing else "critical"
@@ -393,6 +424,15 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
         days = rul.get("rul_days")
         severity = "critical" if isinstance(days, (int, float)) and days < 14 else "warning"
         archetype = code
+    elif not is_motor_on:
+        if pressure_diag >= 1.0:
+            headline = f"Machine in Standby (0.0 A) — Holding Pressure at {pressure_diag:.2f} Bar"
+            severity = "good"
+            archetype = "STANDBY"
+        else:
+            headline = f"Machine Stopped (0.0 A) — System Depressurized ({pressure_diag:.2f} Bar)"
+            severity = "warning"
+            archetype = "STOPPED"
     else:
         headline = "All Monitored Parameters Operating Nominally"
         severity = "good"
@@ -416,9 +456,14 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
         vuf = elec.get("voltage_unbalance_pct")
         vuf_label = f"{float(vuf):.2f}" if isinstance(vuf, (int, float)) else "n/a"
         domain = elec.get("isolated_failure_domain") or "UNKNOWN"
-        summary.append(
-            f"• Agent Beta (De-Weathering & PQ): Domain: {domain} | VUF: {vuf_label}% | True Thermal Rise: {rise_label}°C."
-        )
+        if not is_motor_on:
+            summary.append(
+                f"• Agent Beta (De-Weathering & PQ): Motor de-energized (0.0 A). Feeder VUF: {vuf_label}%."
+            )
+        else:
+            summary.append(
+                f"• Agent Beta (De-Weathering & PQ): Domain: {domain} | VUF: {vuf_label}% | True Thermal Rise: {rise_label}°C."
+            )
     if is_defect and defect and rul:
         method = defect.get("diagnosis_method") or "iso13379"
         days = rul.get("rul_days")
@@ -429,9 +474,21 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
             f"• Agent Gamma (Prognostics): Diagnosed {name} via {method}. Estimated RUL is {days_label} days ({hours_label} operating hours)."
         )
     elif not halted:
-        summary.append(
-            "• Agent Gamma (Prognostics): All monitored mechanical & process components operating nominally."
-        )
+        if not is_motor_on:
+            if pressure_diag >= 1.0:
+                summary.append(
+                    "• Agent Gamma (Prognostics): Compressor in Standby holding line pressure. "
+                    "Dynamic ISO-20816 vibration diagnostics paused until motor current exceeds 2.0 A."
+                )
+            else:
+                summary.append(
+                    "• Agent Gamma (Prognostics): Compressor stopped and depressurized. "
+                    "Dynamic mechanical vibration diagnostics paused."
+                )
+        else:
+            summary.append(
+                "• Agent Gamma (Prognostics): All monitored mechanical & process components operating nominally."
+            )
     if is_defect and cmms and cmms.get("work_order_id"):
         intel = cmms.get("sourcing_intelligence") or {}
         win = intel.get("winning_source") or intel.get("sourcing_recommendation") or "ADVISORY"
@@ -441,9 +498,20 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
             f"• Agent Delta (Prescriptive Maintenance): CMMS Work Order {cmms.get('work_order_id')} drafted. Sourcing: {win}.{extra}"
         )
     elif not halted:
-        summary.append(
-            "• Agent Delta (Prescriptive Maintenance): No corrective maintenance actions required."
-        )
+        if not is_motor_on:
+            if pressure_diag >= 1.0:
+                summary.append(
+                    "• Agent Delta (Prescriptive Maintenance): Ready for automatic cut-in when header pressure drops below ~5.5 Bar."
+                )
+            else:
+                summary.append(
+                    "• Agent Delta (Prescriptive Maintenance): Vessel depressurized (safe for mechanical inspection). "
+                    "If unit was scheduled to run, verify local isolator / E-stop."
+                )
+        else:
+            summary.append(
+                "• Agent Delta (Prescriptive Maintenance): No corrective maintenance actions required."
+            )
 
     actions: List[str] = []
     guide = defect.get("expert_repair_guidance") if isinstance(defect, dict) else None
@@ -461,6 +529,13 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
             actions.append(f"CMMS Action: {cmms.get('recommended_action')}")
         if not actions:
             actions.append("Inspect the diagnosed component and verify live sensor values before scheduling repair.")
+    elif not is_motor_on:
+        if pressure_diag >= 1.0:
+            actions.append("Monitor downstream air consumption.")
+            actions.append("Compressor will auto-start when receiver pressure drops below cut-in threshold (~5.5 Bar).")
+        else:
+            actions.append("Vessel is depressurized — safe to inspect drive belts, coupling, and oil levels.")
+            actions.append("Verify local isolator, emergency stop, and thermal overload relay before restart.")
     else:
         actions.append("Continue 24/7 continuous autonomous telemetry monitoring.")
         actions.append("Maintain standard lubrication schedule according to OEM guidelines.")
@@ -656,9 +731,15 @@ async def broadcast_telemetry(machine_id: str, telemetry: Dict[str, Any]) -> Non
     if not mapped:
         return
     await sio.emit("telemetry", {"machineId": machine_id, "telemetry": mapped})
+    op_state = mapped.get("operatingState", "running")
     await sio.emit(
         "machine:status",
-        {"machineId": machine_id, "reportedStatus": "online", "at": now_ts},
+        {
+            "machineId": machine_id,
+            "reportedStatus": "online",
+            "operatingState": op_state,
+            "at": now_ts,
+        },
     )
     await sio.emit("upstream:status", _upstream_payload())
 

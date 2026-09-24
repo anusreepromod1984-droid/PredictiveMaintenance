@@ -1027,8 +1027,8 @@ class MQTTIngestionService:
             except Exception as exc:
                 logger.warning("[MQTT Fault-Clear] Could not emit clear-alert for %s: %s", frame.machine_id, exc)
             try:
-                from src.agents.open_wo_tracker import OpenWOTracker
-                OpenWOTracker.get_instance().clear_machine_orders(frame.machine_id)
+                from src.agents.open_wo_tracker import OpenWorkOrderTracker
+                OpenWorkOrderTracker().clear_open_work_order(frame.machine_id)
             except Exception as exc:
                 logger.warning("[MQTT Fault-Clear] Could not clear WO tracker for %s: %s", frame.machine_id, exc)
             return

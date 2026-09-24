@@ -21,9 +21,16 @@ def grid_hz(frame: TelemetryFrame) -> float:
 
 
 def is_electrically_loaded(frame: TelemetryFrame) -> bool:
-    """CTs or kW only. Meter %load is often CT full-scale, not 37 kW nameplate."""
-    i_max = max(float(frame.em_ir), float(frame.em_iy), float(frame.em_ib))
-    return i_max > 0.5 or float(frame.em_power) > 0.2
+    """Plant operating rule:
+    Off: <= 0.5 A (~0 Amps)
+    On:  >= 2.0 Amps (typical running load ~4.0 A)
+    """
+    i_max = max(
+        float(frame.em_ir) if frame.em_ir is not None else 0.0,
+        float(frame.em_iy) if frame.em_iy is not None else 0.0,
+        float(frame.em_ib) if frame.em_ib is not None else 0.0,
+    )
+    return i_max > 0.5 or float(frame.em_power or 0.0) > 0.2
 
 
 def is_process_running(frame: TelemetryFrame) -> bool:
@@ -35,8 +42,27 @@ def is_process_running(frame: TelemetryFrame) -> bool:
 
 
 def is_operating(frame: TelemetryFrame) -> bool:
-    """True once the compressor is electrically loaded or process-running."""
+    """True once the compressor motor is actively running."""
     return is_electrically_loaded(frame) or is_process_running(frame)
+
+
+def machine_operating_state(frame: TelemetryFrame) -> str:
+    """Plant operating state based on Logaeshwaran current rule and pressure:
+    - 'running': motor is actively drawing current (>= 2.0 A or kw >= 0.5)
+    - 'standby': motor is off (0 A), but air receiver is holding pressure (>= 1.0 Bar)
+    - 'stopped': motor is off (0 A) and system is depressurized (< 1.0 Bar)
+    """
+    i_max = max(
+        float(frame.em_ir) if frame.em_ir is not None else 0.0,
+        float(frame.em_iy) if frame.em_iy is not None else 0.0,
+        float(frame.em_ib) if frame.em_ib is not None else 0.0,
+    )
+    kw = float(frame.em_power) if frame.em_power is not None else 0.0
+    rpm = float(frame.rpm) if frame.rpm is not None else 0.0
+    if i_max >= 2.0 or kw >= 0.5 or rpm >= 100.0 or is_operating(frame):
+        return "running"
+    pressure = float(frame.pressure or 0.0) if frame.field_was_sent("pressure") else 0.0
+    return "standby" if pressure >= 1.0 else "stopped"
 
 
 def three_phase_kw(frame: TelemetryFrame) -> float:
