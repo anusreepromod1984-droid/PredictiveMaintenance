@@ -27,7 +27,11 @@ def _psycopg_url(url: str) -> str:
 DATABASE_URL = _psycopg_url(settings.get_database_url())
 DATABASE_URL_LOCAL = DATABASE_URL
 
-engine = create_engine(DATABASE_URL_LOCAL, pool_pre_ping=True)
+engine = create_engine(
+    DATABASE_URL_LOCAL,
+    pool_pre_ping=True,
+    connect_args={"connect_timeout": 2}
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

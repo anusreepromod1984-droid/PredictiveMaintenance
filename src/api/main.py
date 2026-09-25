@@ -79,11 +79,14 @@ async def startup_event():
     set_mqtt_service_for_sio(mqtt_service)
     logger.info("[SocketIO] Real-time Socket.IO server active at /socket.io")
     if settings.TELEMETRY_PERSIST_ENABLED:
-        from src.database.telemetry_store import ensure_telemetry_schema
-        if ensure_telemetry_schema():
-            logger.info("[Postgres] MQTT frames → telemetry_reading; agent runs → agent_snapshot")
-        else:
-            logger.warning("[Postgres] Unreachable — MQTT stays in RAM until the database is up")
+        import threading
+        def _init_db():
+            from src.database.telemetry_store import ensure_telemetry_schema
+            if ensure_telemetry_schema():
+                logger.info("[Postgres] MQTT frames → telemetry_reading; agent runs → agent_snapshot")
+            else:
+                logger.warning("[Postgres] Unreachable — MQTT stays in RAM until the database is up")
+        threading.Thread(target=_init_db, daemon=True).start()
     if settings.MQTT_ENABLED:
         logger.info(f"Starting MQTT Broker Subscriber ({settings.MQTT_BROKER_HOST}:{settings.MQTT_BROKER_PORT})...")
         mqtt_service.start()

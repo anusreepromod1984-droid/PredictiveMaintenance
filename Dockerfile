@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source code and catalogs
 COPY src/ ./src/
 COPY public/ ./public/
-COPY data/training/templates/ ./data/training/templates/
+COPY data/ ./data/
 
 # Expose FastAPI port
 EXPOSE 8000
