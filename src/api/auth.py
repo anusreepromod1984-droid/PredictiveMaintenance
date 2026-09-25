@@ -8,6 +8,8 @@ from fastapi.responses import JSONResponse
 from src.config import settings
 
 PUBLIC_API_PATHS = {
+    "/",
+    "/health",
     "/api/v1/health",
     "/api/v1/ready",
     "/api/v1/config/public",

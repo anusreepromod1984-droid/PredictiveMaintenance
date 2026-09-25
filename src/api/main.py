@@ -54,6 +54,16 @@ async def add_no_cache_headers(request, call_next):
         response.headers["Expires"] = "0"
     return response
 
+@app.get("/", summary="Root service status")
+@app.get("/health", summary="Health probe alias")
+async def root():
+    return {
+        "status": "online",
+        "app": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+    }
+
+
 app.include_router(health_router)
 app.include_router(predict_router)
 app.include_router(de_weather_router)
