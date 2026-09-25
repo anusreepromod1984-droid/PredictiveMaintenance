@@ -18,12 +18,13 @@ COPY src/ ./src/
 COPY public/ ./public/
 COPY data/ ./data/
 
-# Expose FastAPI port
+# Expose FastAPI / proxy ports
 EXPOSE 8000
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD curl -f http://localhost:${PORT:-8000}/api/v1/ready || exit 0
+  CMD curl -f http://localhost:${PORT:-8000}/health || exit 0
 
-# Launch uvicorn web server
-CMD ["sh", "-c", "uvicorn src.api.main:application --host 0.0.0.0 --port ${PORT:-8000}"]
+# Launch production server via robust launcher
+CMD ["python", "-m", "src.launcher"]

@@ -110,3 +110,7 @@ async def shutdown_event():
 
 # uvicorn src.api.main:application — Socket.IO owns /socket.io; everything else is FastAPI.
 application = _sio_lib.ASGIApp(sio, other_asgi_app=app)
+
+if __name__ == "__main__":
+    from src.launcher import main as launcher_main
+    launcher_main()

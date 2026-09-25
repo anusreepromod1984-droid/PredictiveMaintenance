@@ -57,11 +57,11 @@ class AppSettings(BaseSettings):
     TELEMETRY_PERSIST_ENABLED: bool = True
 
     # MQTT Broker Configuration (Live Stream Fetch)
-    MQTT_BROKER_HOST: str = "localhost"
+    MQTT_BROKER_HOST: str = "165.22.244.151"
     MQTT_BROKER_PORT: int = 1883
     MQTT_KEEPALIVE: int = 60
-    MQTT_USERNAME: Optional[str] = None
-    MQTT_PASSWORD: Optional[str] = None
+    MQTT_USERNAME: Optional[str] = "embedded"
+    MQTT_PASSWORD: Optional[str] = "embedded"
     MQTT_TOPIC_TELEMETRY: str = "pdm/integrated_json"
     MQTT_TOPIC_ALERTS: str = "pdm/alerts"
     MQTT_ENABLED: bool = True
