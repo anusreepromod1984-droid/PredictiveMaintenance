@@ -59,8 +59,10 @@ class APMSOrchestrator:
 
     def reset_machine(self, machine_id: str) -> str:
         from src.services.oem_mailer import note_machine_cleared
+        from src.services.alert_dispatcher import note_alert_cleared
         self.delta.wo_tracker.clear_open_work_order(machine_id)
         note_machine_cleared(machine_id)
+        note_alert_cleared(machine_id)
         return self.alpha.reset_buffer(machine_id)
 
     def _node_agent_alpha(self, state: APMSAgentState) -> Dict[str, Any]:

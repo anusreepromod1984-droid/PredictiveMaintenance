@@ -1311,10 +1311,26 @@ class MQTTIngestionService:
                     }])
                 except Exception:
                     pass
+
+                # Multi-channel Alert Trigger (WhatsApp Business API & Email)
+                try:
+                    from src.services.alert_dispatcher import dispatch_alert_notifications
+                    dispatch_alert_notifications(
+                        machine_id=machine_id,
+                        prediction_response=prediction_response,
+                        telemetry_frame=telemetry_frame,
+                    )
+                except Exception as alert_err:
+                    logger.error("[MQTT Stream] Alert notification trigger failed: %s", alert_err)
             else:
                 try:
                     from src.api.socketio_server import emit_alert_sync
                     emit_alert_sync(machine_id, [])
+                except Exception:
+                    pass
+                try:
+                    from src.services.alert_dispatcher import note_alert_cleared
+                    note_alert_cleared(machine_id)
                 except Exception:
                     pass
 

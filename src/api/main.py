@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from src.config import settings
 from src.utils.logger import get_logger
 from src.api.auth import api_key_middleware
-from src.api.routes import health_router, predict_router, de_weather_router, maintenance_router, training_router, assets_router, set_mqtt_service, config_router, crm_router, program_router, oem_mail_router
+from src.api.routes import health_router, predict_router, de_weather_router, maintenance_router, training_router, assets_router, set_mqtt_service, config_router, crm_router, program_router, oem_mail_router, alerts_router
 from src.services.mqtt_service import MQTTIngestionService
 from src.api.socketio_server import sio, set_mqtt_service_for_sio
 import socketio as _sio_lib
@@ -64,6 +64,7 @@ app.include_router(config_router)
 app.include_router(crm_router)
 app.include_router(program_router)
 app.include_router(oem_mail_router)
+app.include_router(alerts_router)
 
 if os.path.exists("public"):
     app.mount("/dashboard", StaticFiles(directory="public", html=True), name="dashboard")

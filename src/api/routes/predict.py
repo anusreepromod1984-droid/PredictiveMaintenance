@@ -37,6 +37,15 @@ async def predict_rul(frame: TelemetryFrame):
     """
     try:
         response = orchestrator.run(frame)
+        try:
+            from src.services.alert_dispatcher import dispatch_alert_notifications
+            dispatch_alert_notifications(
+                machine_id=frame.machine_id,
+                prediction_response=response,
+                telemetry_frame=frame,
+            )
+        except Exception as alert_err:
+            logger.debug("[API.Predict] Alert dispatch error: %s", alert_err)
         return response
     except Exception as e:
         logger.error(f"Prediction failed for machine {frame.machine_id}: {e}", exc_info=True)

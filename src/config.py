@@ -98,6 +98,20 @@ class AppSettings(BaseSettings):
     OEM_MAIL_SP_CLIENT_ID: str = "60B14D50-AC47-4A6D-81B0-48AB86A53F51"
     OEM_MAIL_TIMEOUT_S: float = 30.0
 
+    # WhatsApp Business API Configurations
+    WHATSAPP_TOKEN: Optional[str] = None
+    WHATSAPP_PHONE_NUMBER_ID: Optional[str] = None
+    WHATSAPP_VERIFY_TOKEN: str = "pdm_verify_token"
+    WHATSAPP_ALERT_TO: str = "919731139900"
+    WHATSAPP_API_VERSION: str = "v18.0"
+    WHATSAPP_TIMEOUT_S: float = 15.0
+
+    # Multi-channel Alert Dispatcher Settings (WhatsApp + Email)
+    ALERT_NOTIFICATION_ENABLED: bool = True
+    ALERT_MAIL_TO: str = ""
+    ALERT_MIN_SEVERITY: str = "WARNING"  # CRITICAL, SEVERE, WARNING
+    ALERT_NOTIFICATION_COOLDOWN_SECONDS: int = 1800  # 30 mins debounce per defect/machine
+
     # ---------------------------------------------------------
     # NAMUR NE43 Hardware Diagnostic Standards (mA)
     # ---------------------------------------------------------
