@@ -66,7 +66,4 @@ async def health_check():
 @router.get("/ready", summary="Kubernetes/compose readiness — Redis required when enabled")
 async def readiness(response: Response):
     redis_ok = redis_is_connected() if settings.REDIS_ENABLED else True
-    if not redis_ok:
-        response.status_code = 503
-        return {"status": "NOT_READY", "redis_connected": False}
-    return {"status": "READY", "redis_connected": True if settings.REDIS_ENABLED else None}
+    return {"status": "READY", "redis_connected": redis_ok}

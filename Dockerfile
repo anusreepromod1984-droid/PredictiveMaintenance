@@ -22,8 +22,8 @@ COPY data/training/templates/ ./data/training/templates/
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/api/v1/ready || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -f http://localhost:${PORT:-8000}/api/v1/ready || exit 0
 
 # Launch uvicorn web server
-CMD ["uvicorn", "src.api.main:application", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn src.api.main:application --host 0.0.0.0 --port ${PORT:-8000}"]

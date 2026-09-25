@@ -31,7 +31,7 @@ class AppSettings(BaseSettings):
     # API security — set APMS_API_KEY to require X-API-Key / Bearer on /api/v1
     APMS_API_KEY: Optional[str] = None
     AUTH_ENABLED: Optional[bool] = None
-    CORS_ORIGINS: str = "http://127.0.0.1:8000,http://localhost:8000"
+    CORS_ORIGINS: str = "*"
     DOCS_ENABLED: bool = True
 
     def auth_required(self) -> bool:
