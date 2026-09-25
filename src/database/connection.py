@@ -14,6 +14,10 @@ from src.config import settings
 def _psycopg_url(url: str) -> str:
     if not url:
         return url
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+psycopg2://", 1)
+    elif url.startswith("postgresql://") and not url.startswith("postgresql+"):
+        url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
     if "postgres:5432" in url and not os.path.exists("/.dockerenv"):
         # docker-compose publishes Postgres on host port 5433
         url = url.replace("postgres:5432", "localhost:5433")

@@ -244,8 +244,13 @@ class AppSettings(BaseSettings):
     def get_database_url(self) -> str:
         """Returns PostgreSQL connection string."""
         if self.DATABASE_URL:
-            return self.DATABASE_URL
-        return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+            url = self.DATABASE_URL
+            if url.startswith("postgres://"):
+                return url.replace("postgres://", "postgresql+psycopg2://", 1)
+            if url.startswith("postgresql://") and not url.startswith("postgresql+"):
+                return url.replace("postgresql://", "postgresql+psycopg2://", 1)
+            return url
+        return f"postgresql+psycopg2://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     def get_thresholds_dict(self) -> dict:
         """Returns organized dictionary of all operational thresholds for API / Dashboard."""
