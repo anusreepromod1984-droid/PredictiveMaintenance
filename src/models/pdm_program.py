@@ -342,30 +342,44 @@ def build_rul_history(machine_id: str, now: Optional[datetime] = None) -> Dict[s
         except Exception as exc:
             logger.debug("Event historian RUL fallback failed: %s", exc)
 
-    # Fallback 2: Synthesize baseline trend from live telemetry or nominal design life
-    if not points:
+    # Fallback 2: Ensure at least 25 points so the UI line chart always draws a visible degradation line
+    if len(points) < 2:
         now_dt = now or datetime.now()
-        now_ts = int(now_dt.timestamp() * 1000)
-        baseline_rul = 197.7  # Nominal design life (approx 4,745 operating hours)
-        try:
-            from src.api.routes.assets import _mqtt_instance
-            if _mqtt_instance:
-                telem = _mqtt_instance.get_asset_telemetry(machine_id)
-                rem = telem.get("remainingHours")
-                if rem and float(rem) > 0:
-                    baseline_rul = round(float(rem) / 24.0, 1)
-        except Exception:
-            pass
+        base_x = points[0]["x"] if points else int(now_dt.timestamp() * 1000)
+        base_y = points[0]["y"] if points else 197.7
+        base_defect = points[0].get("defect_code", "NORMAL") if points else "NORMAL"
 
-        for i in range(25, -1, -1):
+        if not points:
+            try:
+                from src.api.routes.assets import _mqtt_instance
+                if _mqtt_instance:
+                    telem = _mqtt_instance.get_asset_telemetry(machine_id)
+                    rem = telem.get("remainingHours")
+                    if rem and float(rem) > 0:
+                        base_y = round(float(rem) / 24.0, 1)
+            except Exception:
+                pass
+
+        synthetic_points = []
+        for i in range(25, 0, -1):
             t_offset = i * 60 * 1000  # 1-minute steps
-            val = round(baseline_rul + (i * 0.005), 1)
-            points.append({
-                "x": now_ts - t_offset,
+            val = round(base_y + (i * 0.005), 1)
+            synthetic_points.append({
+                "x": base_x - t_offset,
                 "y": val,
                 "rul_days": val,
                 "defect_code": "NORMAL",
             })
+        if points:
+            synthetic_points.append(points[0])
+        else:
+            synthetic_points.append({
+                "x": base_x,
+                "y": base_y,
+                "rul_days": base_y,
+                "defect_code": base_defect,
+            })
+        points = synthetic_points
 
     points = _smooth_points(points)
     points = _downsample(points)
