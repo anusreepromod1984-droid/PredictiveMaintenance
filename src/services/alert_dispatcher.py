@@ -1423,9 +1423,6 @@ def build_whatsapp_alert_text(
 
 *{s('footer')}*"""
 
-    if custom_note:
-        text += f"\n📝 *{s('note')}:* {custom_note}"
-
     return text
 
 
