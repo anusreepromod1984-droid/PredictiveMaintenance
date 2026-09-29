@@ -1206,6 +1206,138 @@ def _clean_diagnostic_text(text: str) -> str:
     return text.strip()
 
 
+def _summarize_diagnostic_issue(defect_code: str, raw_title: str, language: str) -> str:
+    """Summarizes verbose technical diagnostic descriptions into a punchy 1-line issue."""
+    raw_lower = (raw_title or "").lower()
+    code_upper = (defect_code or "").upper()
+
+    # Sensor flatline / freeze
+    if "frozen" in raw_lower or "flatline" in raw_lower or code_upper == "SENSOR_FROZEN_FLATLINE":
+        m = re.search(r"(\w+)\s+frozen/flatline\s+at\s+([\d.]+)", raw_title, re.IGNORECASE)
+        if m:
+            raw_field = m.group(1)
+            sensor_name = "Compressor Temp" if "compressor" in raw_field.lower() else ("Motor Temp" if "motor" in raw_field.lower() else raw_field)
+            val = float(m.group(2))
+            unit = "°C" if "temp" in raw_field.lower() else ""
+            if language == "hi":
+                return f"{sensor_name} सेंसर {val:.1f} {unit} पर स्थिर/लॉक्ड"
+            if language == "ta":
+                return f"{sensor_name} சென்சார் {val:.1f} {unit} இல் முடங்கியுள்ளது"
+            if language == "de":
+                return f"{sensor_name} Sensor bei {val:.1f} {unit} eingefroren"
+            return f"{sensor_name} sensor frozen at {val:.1f} {unit}"
+        return "Sensor Signal Frozen / Flatline"
+
+    # Voltage unbalance / Derived value mismatch
+    if code_upper == "DERIVED_VALUE_MISMATCH" or "derived_value_mismatch" in raw_lower or "spannungsasymmetrie" in raw_lower:
+        m = re.search(r"([\d.]+)%\s+(?:weicht von|diverged from|vs)\s+([\d.]+)%", raw_title)
+        if m:
+            return f"Voltage Unbalance Mismatch ({m.group(1)}% vs {m.group(2)}%)"
+        return "Voltage Unbalance Calculation Mismatch"
+
+    # Cable cut / Hardware disconnect
+    if code_upper == "HARDWARE_CABLE_FAULT" or "cable" in raw_lower or "disconnect" in raw_lower:
+        if language == "hi":
+            return "सेंसर केबल डिस्कनेक्ट / हार्डवेयर सिग्नल बाधित"
+        if language == "ta":
+            return "சென்சார் கேபிள் துண்டிக்கப்பட்டது"
+        if language == "de":
+            return "Sensorkabel getrennt / Hardwarefehler"
+        return "Sensor Cable Fault / Disconnected"
+
+    # Mechanical defect codes
+    if code_upper == "BPFI":
+        return "Bearing Inner Race Defect (BPFI)"
+    if code_upper == "BPFO":
+        return "Bearing Outer Race Defect (BPFO)"
+    if code_upper == "BSF":
+        return "Bearing Ball Element Defect (BSF)"
+    if code_upper == "FTF":
+        return "Bearing Cage Defect (FTF)"
+    if code_upper in {"MF001", "LOOSENESS"}:
+        return "Mechanical Looseness (MF001)"
+    if code_upper in {"MF002", "MISALIGNMENT"}:
+        return "Shaft Misalignment (MF002)"
+    if code_upper in {"MF003", "IMBALANCE"}:
+        return "Rotor Dynamic Imbalance (MF003)"
+    if code_upper in {"PF001", "AIR_LEAK"}:
+        return "Compressed Air Leakage (PF001)"
+
+    # Fallback: clean and limit length
+    clean = _clean_diagnostic_text(raw_title)
+    first_sentence = clean.split(".")[0].strip()
+    if len(first_sentence) > 60:
+        return first_sentence[:57] + "..."
+    return first_sentence
+
+
+def _summarize_action(defect_code: str, raw_action: str, language: str) -> str:
+    """Provides a concise, actionable triage instruction without repeating diagnostic text."""
+    code_upper = (defect_code or "").upper()
+    raw_lower = (raw_action or "").lower()
+
+    if code_upper == "SENSOR_FROZEN_FLATLINE" or "frozen" in raw_lower or "flatline" in raw_lower:
+        if language == "hi":
+            return "सेंसर लूप वायरिंग और ट्रांसड्यूसर की जांच करें।"
+        if language == "ta":
+            return "சென்சார் லூப் வயரிங் மற்றும் டிரான்ஸ்யூசரை சரிபார்க்கவும்."
+        if language == "de":
+            return "Sensorschleifen-Verdrahtung und Messumformer prüfen."
+        return "Check sensor loop wiring and transducer connections."
+
+    if code_upper == "HARDWARE_CABLE_FAULT" or "cable" in raw_lower or "disconnect" in raw_lower:
+        if language == "hi":
+            return "सेंसर केबल और टर्मिनल कनेक्शन की जांच करें।"
+        if language == "ta":
+            return "சென்சார் கேபிள் மற்றும் டெர்மினல் இணைப்புகளை சரிபார்க்கவும்."
+        if language == "de":
+            return "Sensorkabel und Klemmenanschlüsse prüfen."
+        return "Inspect sensor cables and terminal connections."
+
+    if code_upper == "DERIVED_VALUE_MISMATCH" or "voltage" in raw_lower or "unbalance" in raw_lower or "spannungsasymmetrie" in raw_lower:
+        if language == "hi":
+            return "3-फेज बिजली आपूर्ति और कॉन्टैक्टर टर्मिनलों की जांच करें।"
+        if language == "ta":
+            return "3-கட்ட மின்சார விநியோகம் மற்றும் டெர்மினல்களை சரிபார்க்கவும்."
+        if language == "de":
+            return "3-Phasen-Spannungsversorgung und Klemmen prüfen."
+        return "Inspect 3-phase utility supply and contactor terminals."
+
+    if code_upper in {"BPFI", "BPFO", "BSF", "FTF"}:
+        if language == "hi":
+            return "15 ग्राम ग्रीस लगाएं और कंपन का निरीक्षण करें।"
+        if language == "ta":
+            return "15 கிராம் கிரீஸ் இடவும் மற்றும் அதிர்வை ஆய்வு செய்யவும்."
+        if language == "de":
+            return "15g Lagerfett nachschmieren und Schwingung prüfen."
+        return "Inject 15g grease and monitor vibration trend."
+
+    if code_upper in {"MF001", "LOOSENESS"}:
+        if language == "hi":
+            return "फाउंडेशन बोल्ट को रेटेड टॉर्क पर कसें।"
+        if language == "ta":
+            return "அடித்தள போல்ட்டுகளை சரியான அளவில் இறுக்கவும்."
+        if language == "de":
+            return "Fundamentschrauben mit Solldrehmoment nachziehen."
+        return "Torque foundation hold-down bolts to spec."
+
+    if code_upper in {"MF002", "MISALIGNMENT"}:
+        if language == "hi":
+            return "लेजर शाफ्ट री-अलाइनमेंट करें।"
+        if language == "ta":
+            return "லேசர் ஷாஃப்ட் சீரமைப்பைச் செய்யவும்."
+        if language == "de":
+            return "Laser-Wellenausrichtung durchführen."
+        return "Perform laser shaft realignment on coupling."
+
+    # General fallback: Clean and truncate
+    clean = _clean_diagnostic_text(raw_action)
+    first_sentence = clean.split(".")[0].strip()
+    if len(first_sentence) > 70:
+        return first_sentence[:67] + "..."
+    return first_sentence.rstrip(".") + "."
+
+
 def build_whatsapp_alert_text(
     machine_id: str,
     severity: str,
@@ -1215,11 +1347,13 @@ def build_whatsapp_alert_text(
     language: str = "en",
 ) -> str:
     """
-    Builds clean, uniformly formatted WhatsApp alert text.
-    - All field labels are bold (*Label:*).
-    - All field values are normal text without backticks (avoids light/faint monospace boxes).
-    - Cleaned diagnosis (no raw 'variance=0.00000000').
-    - High confidence reported accurately for deterministic hardware/sensor checks.
+    Builds an Ultra-Compact 6-line industrial alert for WhatsApp:
+    1. Header & Severity
+    2. Asset Name & ID
+    3. Concise Issue / Diagnosis
+    4. Immediate Action Triage
+    5. 1-Line Telemetry Summary
+    6. Deadline & Time
     """
     # Shorthand for localized strings
     def s(key: str) -> str:
@@ -1235,87 +1369,62 @@ def build_whatsapp_alert_text(
     raw_defect_title = defect.defect_name if defect else (
         cable.fault_reason or cable.status if cable and cable.status != "VALID" else "Anomaly Detected"
     )
-    raw_defect_title = _clean_diagnostic_text(raw_defect_title)
-    defect_title = _translate_diagnosis_text(raw_defect_title, language)
     defect_code = defect.defect_code if defect else (cable.status if cable else "ANOMALY")
 
-    # Accurate, professional confidence representation (never misleading N/A)
-    if defect and defect.confidence_percentage and defect.confidence_percentage > 0:
-        confidence = f"{defect.confidence_percentage:.0f}%"
+    # Clean, concise issue summary (eliminates duplicated technical essays)
+    issue_summary = _summarize_diagnostic_issue(defect_code, raw_defect_title, language)
+
+    # Clean, concise action summary (direct field instructions)
+    raw_action = ""
+    if defect and defect.expert_repair_guidance and defect.expert_repair_guidance.immediate_field_triage:
+        raw_action = defect.expert_repair_guidance.immediate_field_triage
     elif cable and cable.status != "VALID":
-        confidence = "100% (Hardware Verification)" if language == "en" else "100%"
-    elif prediction.overall_health_status in {"CRITICAL", "SEVERE", "SENSOR_FAULT"}:
-        confidence = "99%"
-    else:
-        confidence = "95%"
+        raw_action = cable.fault_reason or "Transducer out of range"
+    action_summary = _summarize_action(defect_code, raw_action, language)
 
-    raw_failing_part = defect.failing_component if defect else "Sensor / Electrical Circuit"
-    failing_part = _translate_failing_part(raw_failing_part, language)
+    # 1-Line Telemetry Highlights
+    metrics = _extract_telemetry_metrics(frame, prediction)
+    telemetry_items = []
+    if "vibration_rms" in metrics:
+        iso_tag = f" [{prediction.iso_vibration_zone}]" if prediction.iso_vibration_zone else ""
+        telemetry_items.append(f"Vib: {metrics['vibration_rms']:.2f} mm/s{iso_tag}")
+    if "temp_motor" in metrics:
+        telemetry_items.append(f"Motor: {metrics['temp_motor']:.1f}°C")
+    if "temp_compressor" in metrics:
+        telemetry_items.append(f"Comp: {metrics['temp_compressor']:.1f}°C")
+    if "current_rms" in metrics:
+        telemetry_items.append(f"Current: {metrics['current_rms']:.1f}A")
+    if "load_pct" in metrics:
+        telemetry_items.append(f"Load: {metrics['load_pct']:.0f}%")
 
-    if rul:
-        rul_str = (
-            f"{rul.rul_days:.1f} {s('days')} ({rul.rul_operating_hours:.0f} {s('hrs')})"
-        )
-    else:
-        rul_str = s("inspect_now")
+    telemetry_summary = " | ".join(telemetry_items) if telemetry_items else s('realtime_active')
+
+    # Repair Deadline & RUL
     repair_by = rul.recommended_repair_by_date if rul and rul.recommended_repair_by_date else "Today"
     if repair_by == "Today":
         repair_by = s("today")
+    rul_summary = f"{rul.rul_days:.0f}d" if rul and rul.rul_days else s("inspect_now")
 
-    # Key telemetry highlights: consistent bold labels and clean values
-    metrics = _extract_telemetry_metrics(frame, prediction)
-    lines_telemetry = []
-    if "vibration_rms" in metrics:
-        iso_tag = f" [ISO Zone {prediction.iso_vibration_zone}]" if prediction.iso_vibration_zone else ""
-        lines_telemetry.append(f"• *{s('vibration')}:* {metrics['vibration_rms']:.2f} mm/s RMS{iso_tag}")
-    if "temp_motor" in metrics:
-        lines_telemetry.append(f"• *{s('motor_temp')}:* {metrics['temp_motor']:.1f} °C")
-    if "temp_compressor" in metrics:
-        lines_telemetry.append(f"• *{s('compressor_temp')}:* {metrics['temp_compressor']:.1f} °C")
-    if "current_rms" in metrics:
-        lines_telemetry.append(f"• *{s('current')}:* {metrics['current_rms']:.1f} A")
-    if "load_pct" in metrics:
-        lines_telemetry.append(f"• *{s('motor_load')}:* {metrics['load_pct']:.1f} %")
-    if "vuf_pct" in metrics:
-        lines_telemetry.append(f"• *{s('voltage_unbalance')}:* {metrics['vuf_pct']:.2f} %")
+    # Short IST time string (e.g. '07:53 PM IST')
+    parts = timestamp_str.split(" ")
+    short_time = " ".join(parts[-3:]) if len(parts) >= 3 else timestamp_str
 
-    telemetry_block = "\n".join(lines_telemetry) if lines_telemetry else f"• {s('realtime_active')}"
-
-    # Action summary
-    action = s("dispatch")
-    if defect and defect.expert_repair_guidance:
-        g = defect.expert_repair_guidance
-        if g.immediate_field_triage:
-            action = _translate_action_text(g.immediate_field_triage, language)
-    elif cable and cable.status != "VALID":
-        reason_clean = _clean_diagnostic_text(cable.fault_reason or "Transducer out of range")
-        action = _translate_action_text(f"Check sensor loop wiring: {reason_clean}.", language)
-    action = _clean_diagnostic_text(action)
-
-    # Clean header and consistent field formatting throughout (no backticks causing light/grey boxes)
+    # Header and Machine Name (shortened)
     header_clean = s('header').replace("🚨", "").strip()
+    short_machine_name = machine_name.split("—")[0].strip()
+
+    # Ultra-Compact 6-line layout
     text = f"""🚨 *{header_clean}:* *{badge}*
-
-🏭 *{s('asset')}:* {machine_name}
-🆔 *{s('id')}:* {machine_id}
-🔍 *{s('diagnosis')}:* {defect_title} [{defect_code}]
-🧩 *{s('failing_part')}:* {failing_part}
-📊 *{s('confidence')}:* {confidence}
-⏱️ *{s('rul')}:* {rul_str}
-📅 *{s('repair_deadline')}:* {repair_by}
-
-📈 *{s('telemetry')}:*
-{telemetry_block}
-
-🛠️ *{s('action')}:*
-{action}
-
-🕒 *{s('timestamp')}:* {timestamp_str}
+🏭 *{s('asset')}:* {short_machine_name} ({machine_id})
+🔍 *{s('diagnosis')}:* {issue_summary} [{defect_code}]
+🛠️ *{s('action')}:* {action_summary}
+📈 *{s('telemetry')}:* {telemetry_summary}
+⏱️ *{s('repair_deadline')}:* {repair_by} ({rul_summary}) • {short_time}
 
 *{s('footer')}*"""
 
     if custom_note:
-        text += f"\n\n📝 *{s('note')}:* {custom_note}"
+        text += f"\n📝 *{s('note')}:* {custom_note}"
 
     return text
 
