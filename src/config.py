@@ -90,17 +90,11 @@ class AppSettings(BaseSettings):
 
     # OEM close-the-loop mail (Agent Delta inventory briefing)
     OEM_MAIL_API_URL: str = "https://report.preprod.splus.one/v1/Export/SendMailAsync"
-    OEM_MAIL_TO: str = ""
-    OEM_MAIL_CC: str = ""
-    OEM_MAIL_BCC: str = ""
-    OEM_MAIL_FROM: str = ""
-    OEM_MAIL_PWD: str = ""
-    OEM_MAIL_SP_CLIENT_ID: str = "60B14D50-AC47-4A6D-81B0-48AB86A53F51"
-    OEM_MAIL_TIMEOUT_S: float = 30.0
-
     # WhatsApp Business API Configurations
-    WHATSAPP_TOKEN: Optional[str] = None
-    WHATSAPP_PHONE_NUMBER_ID: Optional[str] = None
+    WHATSAPP_TOKEN: Optional[str] = (
+        "EAATYEMWMBOgBRrnhpcHd2KPZB2BbCTqFqVZAab5mHB9inad8leRDpRhfEz6jy84vLk6SwvrOpreNdUQcjVW5RZA0MGC2L6uTSkXhW2qyHaZAuQ4PNi8ug5xHEBwI92qfu3DuMmLeS7iPYNL6tQ77YM0Y6chiqL5ObmSpRKCzlgTSRZBVycOaP1LgkAhjrKCvxlgZDZD"
+    )
+    WHATSAPP_PHONE_NUMBER_ID: Optional[str] = "985611911313273"
     WHATSAPP_VERIFY_TOKEN: str = "pdm_verify_token"
     WHATSAPP_ALERT_TO: str = "919731139900"
     WHATSAPP_API_VERSION: str = "v18.0"
@@ -108,7 +102,8 @@ class AppSettings(BaseSettings):
 
     # Multi-channel Alert Dispatcher Settings (WhatsApp + Email)
     ALERT_NOTIFICATION_ENABLED: bool = True
-    ALERT_MAIL_TO: str = ""
+    ALERT_MAIL_TO: str = "anusree.p@greenbotz.co"
+    OEM_MAIL_TO: str = "anusree.p@greenbotz.co"
     ALERT_MIN_SEVERITY: str = "WARNING"  # CRITICAL, SEVERE, WARNING
     ALERT_NOTIFICATION_COOLDOWN_SECONDS: int = 1800  # 30 mins debounce per defect/machine
     ALERT_MACHINE_MIN_INTERVAL_SECONDS: int = 300  # 5 mins minimum interval between ANY alert on same asset
