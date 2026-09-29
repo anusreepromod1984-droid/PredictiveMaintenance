@@ -1328,11 +1328,6 @@ class MQTTIngestionService:
                     emit_alert_sync(machine_id, [])
                 except Exception:
                     pass
-                try:
-                    from src.services.alert_dispatcher import note_alert_cleared
-                    note_alert_cleared(machine_id)
-                except Exception:
-                    pass
 
         except Exception as e:
             # Throttled to WARNING, not debug: get_logger pins the level at INFO, so a

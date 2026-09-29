@@ -111,6 +111,8 @@ class AppSettings(BaseSettings):
     ALERT_MAIL_TO: str = ""
     ALERT_MIN_SEVERITY: str = "WARNING"  # CRITICAL, SEVERE, WARNING
     ALERT_NOTIFICATION_COOLDOWN_SECONDS: int = 1800  # 30 mins debounce per defect/machine
+    ALERT_MACHINE_MIN_INTERVAL_SECONDS: int = 300  # 5 mins minimum interval between ANY alert on same asset
+    ALERT_ESCALATION_MIN_INTERVAL_SECONDS: int = 180  # 3 mins minimum delay before escalated severity can re-alert
 
     # ---------------------------------------------------------
     # NAMUR NE43 Hardware Diagnostic Standards (mA)

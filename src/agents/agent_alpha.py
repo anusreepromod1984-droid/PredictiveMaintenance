@@ -301,10 +301,11 @@ class AgentAlpha:
             recent = nums[-settings.SENSOR_FLATLINE_MIN_SAMPLES:]
             variance = float(np.var(recent))
             if variance < settings.SENSOR_FLATLINE_MAX_VARIANCE and recent[-1] != 0.0:
-                logger.warning(f"[Agent Alpha] SENSOR_FROZEN_FLATLINE on {name} (variance={variance:.8f})")
+                var_desc = "zero signal variance" if variance < 1e-6 else f"variance={variance:.4f}"
+                logger.warning(f"[Agent Alpha] SENSOR_FROZEN_FLATLINE on {name} ({var_desc})")
                 return self._quality_fault(
                     "SENSOR_FROZEN_FLATLINE",
-                    f"{name} frozen/flatline at {recent[-1]} across {len(recent)} consecutive running samples (variance={variance:.8f}). Transducer or comm chip locked.",
+                    f"{name} frozen/flatline at {recent[-1]} across {len(recent)} consecutive running samples ({var_desc}). Transducer or comm chip locked.",
                 )
         return None
 

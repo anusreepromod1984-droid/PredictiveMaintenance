@@ -62,7 +62,7 @@ class APMSOrchestrator:
         from src.services.alert_dispatcher import note_alert_cleared
         self.delta.wo_tracker.clear_open_work_order(machine_id)
         note_machine_cleared(machine_id)
-        note_alert_cleared(machine_id)
+        note_alert_cleared(machine_id, clear_cooldown=True)
         return self.alpha.reset_buffer(machine_id)
 
     def _node_agent_alpha(self, state: APMSAgentState) -> Dict[str, Any]:

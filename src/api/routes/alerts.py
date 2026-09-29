@@ -197,7 +197,7 @@ async def trigger_test_alert(req: TestAlertRequest):
 )
 async def clear_alert_cooldown(req: ClearCooldownRequest):
     """Manually clears debounce cooldown for an asset so fresh alerts can fire immediately."""
-    note_alert_cleared(req.machine_id)
+    note_alert_cleared(req.machine_id, clear_cooldown=True)
     return {
         "ok": True,
         "machine_id": req.machine_id,

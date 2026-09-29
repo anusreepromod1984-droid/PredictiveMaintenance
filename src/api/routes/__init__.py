@@ -12,6 +12,7 @@ from src.api.routes.crm import router as crm_router
 from src.api.routes.program import router as program_router
 from src.api.routes.oem_mail import router as oem_mail_router
 from src.api.routes.alerts import router as alerts_router
+from src.api.routes.settings import router as settings_router
 
 __all__ = [
     "health_router",
@@ -26,4 +27,5 @@ __all__ = [
     "program_router",
     "oem_mail_router",
     "alerts_router",
+    "settings_router",
 ]
