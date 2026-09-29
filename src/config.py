@@ -90,6 +90,13 @@ class AppSettings(BaseSettings):
 
     # OEM close-the-loop mail (Agent Delta inventory briefing)
     OEM_MAIL_API_URL: str = "https://report.preprod.splus.one/v1/Export/SendMailAsync"
+    OEM_MAIL_SP_CLIENT_ID: str = "60B14D50-AC47-4A6D-81B0-48AB86A53F51"
+    OEM_MAIL_TIMEOUT_S: float = 30.0
+    OEM_MAIL_CC: str = ""
+    OEM_MAIL_BCC: str = ""
+    OEM_MAIL_FROM: str = ""
+    OEM_MAIL_PWD: str = ""
+    OEM_MAIL_TO: str = "anusree.p@greenbotz.co"
     # WhatsApp Business API Configurations
     WHATSAPP_TOKEN: Optional[str] = (
         "EAATYEMWMBOgBRrnhpcHd2KPZB2BbCTqFqVZAab5mHB9inad8leRDpRhfEz6jy84vLk6SwvrOpreNdUQcjVW5RZA0MGC2L6uTSkXhW2qyHaZAuQ4PNi8ug5xHEBwI92qfu3DuMmLeS7iPYNL6tQ77YM0Y6chiqL5ObmSpRKCzlgTSRZBVycOaP1LgkAhjrKCvxlgZDZD"
