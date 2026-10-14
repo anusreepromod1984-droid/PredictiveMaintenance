@@ -32,6 +32,7 @@ from src.models.live_cues import (
 from src.models.plant_cues import effective_load_pct
 from src.models.rul_history import blend_rul_hours, rms_for_rul
 from src.models.fault_reasoner import fuse_live_evidence
+from src.services.api_limits import get_vibration_band
 from src.utils.logger import get_logger
 
 logger = get_logger("Agents.Gamma")
@@ -132,7 +133,7 @@ class AgentGamma:
             thermal=thermal,
             history=prior,
         )
-        cls_result = fused
+        cls_result = self._apply_api_vibration_band(frame, fused)
         expert_guidance = self.expert_advisor.get_repair_guidance(
             defect_code=cls_result["defect_code"],
             component_name=cls_result["failing_component"],
@@ -251,6 +252,36 @@ class AgentGamma:
             f"headline RUL {rul_out.rul_days}d method={rul_out.method} rms={rms_rul} ({rms_source})"
         )
         return defect_out, rul_out
+
+    @staticmethod
+    def _apply_api_vibration_band(frame: TelemetryFrame, cls_result: Dict[str, Any]) -> Dict[str, Any]:
+        """Vibration outside the platform's configured band is a defect, whatever ISO says."""
+        if not frame.field_was_sent("imuAcceleration"):
+            return cls_result
+        band = get_vibration_band(frame.machine_id)
+        if not band:
+            return cls_result
+        lo, hi = band
+        value = float(frame.imu_acceleration)
+        if lo <= value <= hi:
+            return cls_result
+        summary = f"Vibration {value:.2f} mm/s is outside the configured alert range {lo:g}-{hi:g} mm/s."
+        code = str(cls_result.get("defect_code") or "NORMAL")
+        if code not in {"NORMAL", "NONE", "ANOMALY_UNCLASSIFIED", "UNKNOWN"}:
+            # A named defect is already on the card: keep it, but say the band is breached too.
+            merged = dict(cls_result)
+            merged["reasoning_summary"] = f"{summary} {merged.get('reasoning_summary') or ''}".strip()
+            return merged
+        return {
+            "defect_code": "ANOMALY_UNCLASSIFIED",
+            "defect_name": f"Vibration {value:.2f} mm/s outside alert range {lo:g}-{hi:g} mm/s",
+            "failing_component": "Mechanical Drive Assembly / Bearings",
+            "confidence_percentage": 95.0,
+            "diagnosis_method": "api_alert_threshold",
+            "reasoning_summary": summary,
+            "reasoned_part_key": None,
+            "hypotheses": cls_result.get("hypotheses", []),
+        }
 
     @staticmethod
     def _merge_spectrum(fft_result, spec_result):

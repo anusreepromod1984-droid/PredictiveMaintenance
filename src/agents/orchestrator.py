@@ -206,6 +206,9 @@ class APMSOrchestrator:
         if wo and wo.ticket_type == "PM_CONDITION":
             return "WATCH", "PM_DUE"
         if defect and defect.defect_code != "NORMAL":
+            if getattr(defect, "diagnosis_method", None) == "api_alert_threshold":
+                # Same severity as the platform's own alert for a vibration-band breach.
+                return "CRITICAL", "MACHINE_RISK"
             if rul and rul.rul_days <= 14:
                 return "CRITICAL", "MACHINE_RISK"
             return "DEGRADED", "MACHINE_RISK"
