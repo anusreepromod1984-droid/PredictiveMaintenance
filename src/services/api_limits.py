@@ -47,8 +47,14 @@ def parse_vibration_band(alert_profile: Dict[str, Any]) -> Optional[Tuple[float,
     return None
 
 
+import os
+
+_DEFAULT_BAND_MIN = float(os.getenv("VIBRATION_BAND_MIN", "0.0"))
+_DEFAULT_BAND_MAX = float(os.getenv("VIBRATION_BAND_MAX", "0.1"))
+
+
 def get_vibration_band(machine_id: str) -> Optional[Tuple[float, float]]:
-    if not machine_id or not gbotz_client.api_key_configured():
+    if not machine_id:
         return None
     now = time.time()
     with _lock:
@@ -56,13 +62,29 @@ def get_vibration_band(machine_id: str) -> Optional[Tuple[float, float]]:
         if hit and now < hit[0]:
             return hit[1]
     band: Optional[Tuple[float, float]] = None
-    try:
-        payload = gbotz_client.query({"machineIds": [machine_id], "include": ["alertProfile"]})
-        for m in payload.get("machines") or []:
-            if str(m.get("machineId", "")).lower() == machine_id.lower():
-                band = parse_vibration_band(m.get("alertProfile") or {})
-    except Exception as exc:  # unknown machine (404), timeout, bad payload ...
-        logger.debug(f"API vibration band unavailable for {machine_id}: {exc}")
+    if gbotz_client.api_key_configured():
+        candidates = [machine_id]
+        if machine_id.lower() == "compressor_unit_01":
+            candidates.append("compressor")
+        try:
+            payload = gbotz_client.query({"machineIds": candidates, "include": ["alertProfile"]})
+            for m in payload.get("machines") or []:
+                mid = str(m.get("machineId", "")).lower()
+                if mid in [c.lower() for c in candidates]:
+                    b = parse_vibration_band(m.get("alertProfile") or {})
+                    if b:
+                        band = b
+                        break
+        except Exception as exc:  # unknown machine (404), timeout, bad payload ...
+            logger.debug(f"API vibration band unavailable for {machine_id}: {exc}")
+
+    # Fallback to configured environment / platform limits for known devices like G-Sensor-01
+    if not band:
+        if machine_id.lower() in {"g-sensor-01", "gbz-rx-1", "g_sensor_01"}:
+            band = (_DEFAULT_BAND_MIN, _DEFAULT_BAND_MAX)
+        elif os.getenv("VIBRATION_BAND_MAX"):
+            band = (_DEFAULT_BAND_MIN, _DEFAULT_BAND_MAX)
+
     with _lock:
         _cache[machine_id] = (now + (_TTL_OK_S if band else _TTL_MISS_S), band)
     return band

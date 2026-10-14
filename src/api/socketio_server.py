@@ -412,6 +412,14 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
     pressure_diag = float(telem.get("pressure") or 0.0)
     is_motor_on = i_max_diag >= 2.0 or kw_diag >= 0.5 or rpm_diag >= 100.0
 
+    from src.services.api_limits import get_vibration_band
+    api_band = get_vibration_band(machine_id)
+    vib_current = float(telem.get("imuAcceleration") or telem.get("imu_acceleration") or 0.0)
+    if api_band and vib_current > 0.0 and (vib_current < api_band[0] or vib_current > api_band[1]):
+        code = "VIBRATION_API_LIMIT_EXCEEDED"
+        name = f"Vibration {vib_current:.2f} mm/s outside alert range {api_band[0]:g}-{api_band[1]:g} mm/s"
+        is_defect = True
+
     if halted:
         headline = f"Sensor Anomaly Halted: {cable_status}"
         severity = "warning" if missing else "critical"
@@ -419,10 +427,15 @@ def to_frontend_diagnosis(machine_id: str, prediction: Any) -> Dict[str, Any]:
     elif is_defect:
         if code.upper() == "PF001":
             headline = "Compressed-air leak (PF001) Identified"
+        elif code == "VIBRATION_API_LIMIT_EXCEEDED":
+            headline = f"Vibration {vib_current:.2f} mm/s Outside Alert Range ({api_band[0]:g}–{api_band[1]:g} mm/s) Identified"
         else:
             headline = f"{name} ({code}) Identified"
         days = rul.get("rul_days")
-        severity = "critical" if isinstance(days, (int, float)) and days < 14 else "warning"
+        if defect.get("diagnosis_method") == "api_alert_threshold" or code in {"VIBRATION_API_LIMIT_EXCEEDED", "ANOMALY_UNCLASSIFIED"}:
+            severity = "critical"
+        else:
+            severity = "critical" if isinstance(days, (int, float)) and days < 14 else "warning"
         archetype = code
     elif not is_motor_on:
         if pressure_diag >= 1.0:
